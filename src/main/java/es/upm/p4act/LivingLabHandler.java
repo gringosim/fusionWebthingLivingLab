@@ -2,7 +2,9 @@ package es.upm.p4act;
 import es.upm.ll.LlBridge;
 import es.upm.ll.device.RemoteDevice;
 import es.upm.ll.device.RemoteDeviceConstants;
-
+/*
+ * This class manager the devices of the Living Lab, it allows to change state of VLC player and Remote 2 devices
+ */
 public class LivingLabHandler {
 	
 	

@@ -1,7 +1,9 @@
 package es.upm.ll.device;
 
 import java.util.Hashtable;
-
+/*
+ * This class matches the constants that identify the devices inside the service of the Plan4Act with the identifiers used into the universAAL service 
+ */
 public class uAALDeviceConstants {
 
 	

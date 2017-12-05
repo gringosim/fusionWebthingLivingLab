@@ -3,7 +3,9 @@ package es.upm.p4act;
 import java.util.Hashtable;
 
 import es.upm.ll.device.RemoteDeviceConstants;
-
+/*
+ * This class translate the plan4act device identifiers into Remote2 device identifiers
+ */
 public class Plan4ActConstants {  
 	 /*
     Utilities functions Living Lab
