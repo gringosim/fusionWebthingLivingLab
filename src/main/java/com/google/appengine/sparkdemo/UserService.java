@@ -9,7 +9,7 @@ import com.google.cloud.datastore.KeyFactory;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
 
-import es.upm.UserUtils;
+import es.upm.interfaces.UserUtils;
 
 import java.util.ArrayList;
 import java.util.List;

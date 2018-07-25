@@ -80,7 +80,7 @@ public static final Hashtable<String, String> devices;
     public static String OFF="0";
     /*
     URL:
-    http://138.4.10.224/remote.htm?id= LUZ_CASA_ONOFF&value=1
+    http://138.4.10.224/remote.htm?id=LUZ_CASA_ONOFF&value=1
 
     *LUZ_CASA_ONOFF
     LUZ_CASA

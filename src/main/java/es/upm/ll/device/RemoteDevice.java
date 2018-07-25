@@ -3,10 +3,17 @@ package es.upm.ll.device;
 
 import es.upm.ll.LlBridge;
 
+/*
+ * This class need to be tested.
+ */
+
 public  class RemoteDevice {
 	
-
+    
 	private String device = "LUZ_CASA";
+	/*
+	 * The url should be injected as dependency
+	 */
 	private String url = "http://138.4.10.224/remote.htm?id="+device+"&value=";
 	private static boolean on_off_mode = false;
 	
@@ -18,6 +25,7 @@ public  class RemoteDevice {
 	
 	public RemoteDevice(LlBridge b, String p4a_dev){
 		 bridge = b;
+		 // the RemoteDeviceConstants class maps the plan4Act devices on Remote devices
 		 device = RemoteDeviceConstants.devices.get(p4a_dev);
 		 url = "http://138.4.10.224/remote.htm?id="+device+"&value=";
 	}
@@ -43,7 +51,9 @@ public  class RemoteDevice {
 		bridge.downloadUrl("http://138.4.10.224/remote.htm?id="+device+"_ONOFF&value="+newValue);
 		return result;	
 	}
-	
+	/*
+	 * Not all Remote devices can be managed with fade effect
+	 */
 	public String fadeInDevice() throws Exception{
 		String result = "";
 		for (int i =0; i<100; i=i+10){
@@ -66,6 +76,7 @@ public  class RemoteDevice {
 			result = result + bridge.downloadUrl(url_to_call);
 			Thread.sleep(2000);
 		}
+		bridge.downloadUrl("http://138.4.10.224/remote.htm?id="+device+"_ONOFF&value=0");
 		return result;	
 	}
 

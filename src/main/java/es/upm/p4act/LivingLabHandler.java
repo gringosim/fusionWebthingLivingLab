@@ -2,18 +2,87 @@ package es.upm.p4act;
 import es.upm.ll.LlBridge;
 import es.upm.ll.device.RemoteDevice;
 import es.upm.ll.device.RemoteDeviceConstants;
+import java.net.URI;
+import javax.servlet.http.*;
+
 /*
- * This class manager the devices of the Living Lab, it allows to change state of VLC player and Remote 2 devices
+ * This class manager the devices of the Living Lab, it allows to change state of VLC player and Remote  device
  */
-public class LivingLabHandler {
-	
-	
+public class LivingLabHandler  {
+
 	public static final String CMD_GET = "get_status"; 
-	public static final String CMD_SET = "set_status"; 
+	public static final String CMD_SET = "set_status";
+
+	public HttpServletRequest request;
+	public static String matchKey;
+	public static URI matchURI;
+	public static String myUri;
+	public String handleDevice(Plan4ActRequest req){
+		try{
+			Plan4ActConstants.initRelations();
+			myUri= request.getRequestURI();
+			System.out.println("Este es el URI de request: "+ myUri);
+			matchKey=Plan4ActConstants.relations.get(myUri);
+			matchURI= URI.create(matchKey);
+			System.out.println("handleDevice: "+req.device_id+" "+req.device_name);
+			//Handle requests to Media Player
+			if(req.device_id.equalsIgnoreCase(Plan4ActConstants.MEDIA_PLAYER)){
+				if(req.cmd.equalsIgnoreCase("set_status")){
+					if(req.value.equalsIgnoreCase("1")||req.value.equalsIgnoreCase("true")||req.value.equalsIgnoreCase("on")){
+						Plan4ActVLCDecoder.fadeInMusicEffect();
+					}
+					else {
+						Plan4ActVLCDecoder.fadeOutMusicEffect();
+					}
+				  
+				  return getPlayerSetSuccessMessage(req);	
+				}
+				
+			}
+			System.out.println("It is not the MEDIA_PLAYER");
+			//Handle requests to living lab devices thought remote or uAAL
+			
+			
+			//thought remote
+			if(RemoteDeviceConstants.isARemoteDevice(req.device_id)){
+				if(req.cmd.equalsIgnoreCase("set_status")){
+					RemoteDevice device = new RemoteDevice(new LlBridge(),req.device_id);
+					if(req.value.equalsIgnoreCase("1")||req.value.equalsIgnoreCase("true")||req.value.equalsIgnoreCase("on")){
+						device.fadeInDevice();
+					}
+					else {
+						device.fadeOutDevice();
+					}
+				  
+				  return getDeviceSetSuccessMessage(req);	
+				}
+				
+			}
+			
+			
+			return getErrorMessage();
+			}catch(Exception e){
+				System.out.println("handleDevice - Error: "+e.getMessage());
+				return getErrorMessageFromRequest(req);
+			}
+			
+	}
+
+
 	
+	public String handleDeviceJsonRequest(String postData) {
+		Plan4ActRequest req = Plan4ActMessageParser.fromJsonToP4ARequest(postData);
+		return handleDevice(req);
+	}
+	
+	/*
+	 * Utility functions
+	 * 
+	 */
 	public String getErrorMessageFromRequest(Plan4ActRequest req){
 		Plan4ActResponse resp = new Plan4ActResponse();
 		System.out.println("getErrorMessageFromRequest");
+		System.out.println(myUri);
 		resp.cmd = req.cmd;
 		resp.code = "500";
 		resp.description = "Generic server error";
@@ -62,58 +131,4 @@ public class LivingLabHandler {
 		resp.sequence_number = req.sequence_number;
 		return Plan4ActMessageParser.fromP4AResponseToJson(resp);
 	}
-	
-	public String handleDevice(Plan4ActRequest req){
-		try{
-			System.out.println("handleDevice");
-			//Handle requests to Media Player
-			if(req.device_name.equalsIgnoreCase(Plan4ActConstants.MEDIA_PLAYER)){
-				if(req.cmd.equalsIgnoreCase("set_status")){
-					if(req.value.equalsIgnoreCase("1")||req.value.equalsIgnoreCase("true")||req.value.equalsIgnoreCase("on")){
-						Plan4ActVLCDecoder.fadeInMusicEffect();
-					}
-					else {
-						Plan4ActVLCDecoder.fadeOutMusicEffect();
-					}
-				  
-				  return getPlayerSetSuccessMessage(req);	
-				}
-				
-			}
-			
-			//Handle requests to living lab devices
-			
-			
-			//thought remote
-			if(RemoteDeviceConstants.isARemoteDevice(req.device_name)){
-				if(req.cmd.equalsIgnoreCase("set_status")){
-					RemoteDevice device = new RemoteDevice(new LlBridge(),req.device_name);
-					if(req.value.equalsIgnoreCase("1")||req.value.equalsIgnoreCase("true")||req.value.equalsIgnoreCase("on")){
-						device.fadeInDevice();
-					}
-					else {
-						device.fadeOutDevice();
-					}
-				  
-				  return getDeviceSetSuccessMessage(req);	
-				}
-				
-			}
-			
-			
-			return getErrorMessage();
-			}catch(Exception e){
-				System.out.println("handleDevice - Error: "+e.getMessage());
-				return getErrorMessageFromRequest(req);
-			}
-			
-	}
-
-
-	
-	public String handleDeviceJsonRequest(String postData) {
-		Plan4ActRequest req = Plan4ActMessageParser.fromJsonToP4ARequest(postData);
-		return handleDevice(req);
-	}	
-
 }

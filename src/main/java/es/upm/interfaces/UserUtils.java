@@ -1,4 +1,4 @@
-package es.upm;
+package es.upm.interfaces;
 
 public interface UserUtils {
     

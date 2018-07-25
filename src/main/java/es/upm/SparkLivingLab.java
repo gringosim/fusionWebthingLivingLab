@@ -14,6 +14,7 @@ import com.qmetric.spark.authentication.AuthenticationDetails;
 import es.upm.auth.JWTAuthHandler;
 import es.upm.auth.JWTAuthenticationFilter;
 import es.upm.auth.User;
+import es.upm.interfaces.UserUtils;
 import es.upm.ll.regex.TextRecognizer;
 import es.upm.p4act.LivingLabHandler;
 import es.upm.p4act.Plan4ActRequest;
@@ -37,58 +38,45 @@ public class SparkLivingLab {
 		//handle HTTPS GET to path /device
 		 get("/info", (request, response) -> "Welcome to LivingLab!!!");
 		
-		//set JWT authentication for request to the path /device
-		before("/device",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-		System.out.println("Adding JWTAuthenticationFilter to device path");
+		//set JWT authentication for request to the path /device and plan4act authentication type is Bearer expected header Authorization: Bearer <token>
+		/*before("/device",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
+		before("/plan4act",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
+		System.out.println("Adding JWTAuthenticationFilter to device and plan4act path");
 		//set JWT authentication for request to the path /analizetext
 		before("/analizetext",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		System.out.println("Adding JWTAuthenticationFilter to analizetext path");
+		*/
 		
 		
-		//manage authentication and generates token for valid users
-		post("/auth", (request, response) -> {
-			response.header("Content-Type", "application/json");
-			User user = JWTAuthHandler.fromJsonToUser(request.body());
-			if(userUtils != null ){
-				if(userUtils.checkUser(user.username, user.password)){
-					user = new User();
-					user.username = "eugenio";
-				    user.password = "gaeta";			
-				}
-			}
-			return JWTAuthHandler.getTokenForUser(user);
-		});
+		//manage authentication and generates token for valid users 
+		//example : post {"username":"eugenio","password":"gaeta"} it create a token for the authentication
+		post("/auth", (request, response) -> {return AuthManager.handleRequest(request, response, userUtils);});
 
 		
-		
-		//handle HTTPS GET to path /device
-		 get("/device", (request, response) -> {
-	        	response.header("Content-Type", "application/json");
-	            response.header("Access-Control-Allow-Origin","*");
-	            response.header("Access-Control-Allow-Methods","GET,PUT,POST,DELETE,PATCH,OPTIONS");
-	            response.header("Access-Control-Allow-Headers","Authorization, authorization");	
-	            
-                String version = request.queryParams("version");
-                String cmd = request.queryParams("cmd");
-                String device_id = request.queryParams("device_id");
-                String device_name = request.queryParams("device_name");
-                String value = request.queryParams("value");
-                String sequence = request.queryParams("sequence_number");
-                
-                Plan4ActRequest r = new Plan4ActRequest();
-                r.version = version;
-                r.cmd = cmd;
-                r.device_id = device_id;
-                r.device_name = device_name;
-                r.value = value;
-                r.sequence_number = sequence;
-	            return (new LivingLabHandler()).handleDevice(r);
-		      }
-		     );
+		//handle HTTP/HTTPS GET to path /device http://localhost:8080/device?cmd=set_status&device_id=BATHROOM_DOOR&device_name=BATHROOM_DOOR&value=1&sequence_number=35345
+		/*
+		    String version = request.queryParams("version");
+	        String cmd = request.queryParams("cmd");
+	        String device_id = request.queryParams("device_id");
+	        String device_name = request.queryParams("device_name");
+	        String value = request.queryParams("value");
+	        String sequence = request.queryParams("sequence_number");
+		 */
+		 get("/device", (request, response) -> {return DeviceManager.handleRequest(request, response);});
+		//handle HTTP/HTTPS GET to path /plan4act http://localhost:8080/plan4act?cmd=set_status&device_id=BATHROOM_DOOR&device_name=BATHROOM_DOOR&value=1&sequence_number=35345
+			/*
+			    String version = request.queryParams("version");
+		        String cmd = request.queryParams("cmd");
+		        String device_id = request.queryParams("device_id");
+		        String device_name = request.queryParams("device_name");
+		        String value = request.queryParams("value");
+		        String sequence = request.queryParams("sequence_number");
+			 */
+		 get("/plan4act", (request, response) -> {return DeviceManager.handleRequest(request, response);});
 		 
 		//handle HTTPS GET to path /device
 		 get("/analizetext", (request, response) -> {
-	        	response.header("Content-Type", "application/json");
+	        response.header("Content-Type", "application/json");
 	        response.header("Access-Control-Allow-Origin","*");
 	        response.header("Access-Control-Allow-Methods","GET,PUT,POST,DELETE,PATCH,OPTIONS");
 	        response.header("Access-Control-Allow-Headers","Authorization, authorization");	
@@ -96,7 +84,38 @@ public class SparkLivingLab {
 	        return (new TextRecognizer()).getJsonMessage(input);
 		      }
 		     );
-		
+		/* agregado de webthing*/
+
+
+
+		// These are matched in the order they are added.
+		get("/:thingId/properties/:propertyName", (request,response)->{return DeviceManager.handleRequest(request, response);
+
+				}
+		);
+		get("/:thingId/properties", (request,response)->{
+					return "/:thingId/properties";
+				}
+		);
+		get("/:thingId", (request,response)->{
+					return "/:thingId";
+				}
+		);
+
+		get("/", (request,response)->{
+					return "/";
+				}
+		);
+
+		get("/properties/:propertyName", (request,response)->{
+					return "/properties/:propertyName";
+				}
+		);
+
+		get("/properties", (request,response)->{
+					return "/properties";
+				}
+		);
     }
 
 }

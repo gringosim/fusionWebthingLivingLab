@@ -50,9 +50,13 @@ public class Main {
         }
       }
     }
+    //this class manage users on Google Cloud if available
+    /*
     UserService service = new UserService(DatastoreOptions.getDefaultInstance().getService(), kind);
     UserController userController = new UserController(service);
     es.upm.SparkLivingLab.setUserUtils(service);
+    */
+    //SparkLivingLab is the main class, it defines autenthication and routes
     es.upm.SparkLivingLab.main(args);
    
   }

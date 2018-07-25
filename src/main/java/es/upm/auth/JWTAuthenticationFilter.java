@@ -17,7 +17,11 @@ import spark.Request;
 import spark.Response;
 
 public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
-
+    
+	
+	/*
+	 * implement check authentication type  Bearer expected header Authorization: Bearer <token>
+	 */
 	public JWTAuthenticationFilter(String path, AuthenticationDetails authenticationDetails) {
 		super(path, authenticationDetails);
 		System.out.println("Service path: "+path);
@@ -57,10 +61,11 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
         	boolean valid=false;
         	try{
         	JWTVerifier verifier = JWT.require(Algorithm.HMAC256("secret"))
-        			.acceptExpiresAt(30)   
+        			.acceptLeeway(30) // 1 sec for nbf, iat and exp 
         		    .build();
-        	System.out.println("Try to verify token. ");
+        	System.out.println("Try to verify token: "+jwtHeader);
         	DecodedJWT jwt = verifier.verify(jwtHeader.trim());
+        	System.out.println("DecodedJWT: "+jwt.toString());
         	System.out.println(jwt.toString());
         	System.out.println("Expire: "+jwt.getExpiresAt().getTime());
         	//System.out.println("Issued: "+jwt.getIssuedAt().getTime());

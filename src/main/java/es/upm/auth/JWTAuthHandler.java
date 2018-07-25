@@ -60,7 +60,7 @@ public class JWTAuthHandler {
 		return json;
 	}
 	
-
+   
 
 	public static User fromJsonToUser(String user){
 		Gson gson = new Gson();
@@ -74,6 +74,16 @@ public class JWTAuthHandler {
 		Token token = new Token();
 		token.token = createTokenForUser(user.username);
 		token.code = "200";
+		String json = gson.toJson(token);
+		System.out.println(json);
+		return json;
+	}
+	
+	public static String getGenericErrorMessage() {
+		Token token = new Token();
+		token.token = "No valid user";
+		token.code = "500";
+		Gson gson = new Gson();
 		String json = gson.toJson(token);
 		System.out.println(json);
 		return json;
