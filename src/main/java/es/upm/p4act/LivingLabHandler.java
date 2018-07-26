@@ -2,8 +2,6 @@ package es.upm.p4act;
 import es.upm.ll.LlBridge;
 import es.upm.ll.device.RemoteDevice;
 import es.upm.ll.device.RemoteDeviceConstants;
-import java.net.URI;
-import javax.servlet.http.*;
 
 /*
  * This class manager the devices of the Living Lab, it allows to change state of VLC player and Remote  device
@@ -13,17 +11,10 @@ public class LivingLabHandler  {
 	public static final String CMD_GET = "get_status"; 
 	public static final String CMD_SET = "set_status";
 
-	public HttpServletRequest request;
-	public static String matchKey;
-	public static URI matchURI;
-	public static String myUri;
+
 	public String handleDevice(Plan4ActRequest req){
 		try{
-			Plan4ActConstants.initRelations();
-			myUri= request.getRequestURI();
-			System.out.println("Este es el URI de request: "+ myUri);
-			matchKey=Plan4ActConstants.relations.get(myUri);
-			matchURI= URI.create(matchKey);
+
 			System.out.println("handleDevice: "+req.device_id+" "+req.device_name);
 			//Handle requests to Media Player
 			if(req.device_id.equalsIgnoreCase(Plan4ActConstants.MEDIA_PLAYER)){
@@ -82,7 +73,7 @@ public class LivingLabHandler  {
 	public String getErrorMessageFromRequest(Plan4ActRequest req){
 		Plan4ActResponse resp = new Plan4ActResponse();
 		System.out.println("getErrorMessageFromRequest");
-		System.out.println(myUri);
+
 		resp.cmd = req.cmd;
 		resp.code = "500";
 		resp.description = "Generic server error";
