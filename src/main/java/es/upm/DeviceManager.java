@@ -25,7 +25,7 @@ public class DeviceManager {
  */
      public static String matchURL (spark.Request request){
          Plan4ActConstants.initRelations();
-         requestUri= request.pathInfo();
+         requestUri = request.pathInfo();
          System.out.println("Este es el URI de request: "+ requestUri);
          actualURL=Plan4ActConstants.relations.get(requestUri);
          System.out.println("Este es el URL real: "+ actualURL);
@@ -64,6 +64,8 @@ public class DeviceManager {
         String value = params.get("value");
         System.out.println("Value "+value);
         String sequence = request.queryParams("sequence_number");
+
+
         
         Plan4ActRequest r = new Plan4ActRequest();
          r.version = version;

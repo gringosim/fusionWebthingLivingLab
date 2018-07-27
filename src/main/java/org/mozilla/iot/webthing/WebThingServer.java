@@ -445,10 +445,6 @@ public class WebThingServer extends RouterNanoHTTPD {
         }
     }
 
-    /**
-     * Handle a request to /. Eze: borré ThingHandler suponiendo que es cuando se usa SingleThings
-     */
-
 
     /**
      * Handle a request to /properties.

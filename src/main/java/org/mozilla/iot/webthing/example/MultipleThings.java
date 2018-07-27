@@ -1,9 +1,7 @@
 package org.mozilla.iot.webthing.example;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mozilla.iot.webthing.Action;
-import org.mozilla.iot.webthing.Event;
+//import org.mozilla.iot.webthing.Event;
 import org.mozilla.iot.webthing.Property;
 import org.mozilla.iot.webthing.Thing;
 import org.mozilla.iot.webthing.Value;
@@ -32,11 +30,12 @@ public class MultipleThings {
 
             // If adding more than one thing, use MultipleThings() with a name.
             // In the single thing case, the thing's name will be broadcast.
-            WebThingServer server =
+            WebThingServer server = null;
+            /*
                     new WebThingServer(new WebThingServer.MultipleThings(things,
                                                                          "LightAndTempDevice"),
                                        8888);
-
+                */
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
                     server.stop();
@@ -135,16 +134,16 @@ public class MultipleThings {
             fadeProperties.put("duration", fadeDuration);
             fadeInput.put("properties", fadeProperties);
             fadeMetadata.put("input", fadeInput);
-            this.addAvailableAction("fade", fadeMetadata, FadeAction.class);
+           // this.addAvailableAction("fade", fadeMetadata, FadeAction.class);
 
             Map<String, Object> overheatedMetadata = new HashMap<>();
             overheatedMetadata.put("description",
                                    "The lamp has exceeded its safe operating temperature");
             overheatedMetadata.put("type", "number");
             overheatedMetadata.put("unit", "celsius");
-            this.addAvailableEvent("overheated", overheatedMetadata);
+         //   this.addAvailableEvent("overheated", overheatedMetadata);
         }
-
+/*
         public static class OverheatedEvent extends Event {
             public OverheatedEvent(Thing thing, int data) {
                 super(thing, "overheated", data);
@@ -168,7 +167,7 @@ public class MultipleThings {
                 thing.setProperty("brightness", input.getInt("brightness"));
                 thing.addEvent(new OverheatedEvent(thing, 102));
             }
-        }
+        }*/
     }
 
     /**

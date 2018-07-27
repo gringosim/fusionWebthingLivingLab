@@ -57,7 +57,7 @@ public class Plan4ActConstants {
 
    public static void initRelations(){
    	relations = new Hashtable<String,String>();
-   	relations.put("/mainLights/properties/on","http://138.4.10.224/remote.htm?device_id=LUZ_CASA_ONOFF&value=");
+   	relations.put("/mainLights/properties/on","http://138.4.10.224/remote.htm?device_id=LUZ_CASA_ONOFF&value=1");
 
    }
    

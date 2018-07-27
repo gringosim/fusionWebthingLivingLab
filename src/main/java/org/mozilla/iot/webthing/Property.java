@@ -28,9 +28,9 @@ public class Property<T> {
      * @param name  Name of the property
      * @param value Value object to hold the property value
      */
-   /* public Property(Thing thing, String name, Value<T> value) {
+    public Property(Thing thing, String name, Value<T> value) {
         this(thing, name, value, null);
-    }*/
+    }
 
     /**
      * Initialize the object.

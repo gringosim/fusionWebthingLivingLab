@@ -29,12 +29,12 @@ public class Thing {
     private List<String> type;
     private String name;
   //  private String description;
-    private Map<String, Property> properties;
-    private Map<String, AvailableAction> availableActions;
-    private Map<String, AvailableEvent> availableEvents;
-    private Map<String, List<Action>> actions;
-    private List<Event> events;
-    private Set<WebThingServer.ThingHandler.ThingWebSocket> subscribers;
+    public Map<String, Property> properties;
+  //  private Map<String, AvailableAction> availableActions;
+  //  private Map<String, AvailableEvent> availableEvents;
+   // private Map<String, List<Action>> actions;
+ //   private List<Event> events;
+ //   private Set<WebThingServer.ThingHandler.ThingWebSocket> subscribers;
     public String hrefPrefix;
     private String wsHref;
     private String uiHref;
@@ -72,11 +72,11 @@ public class Thing {
         this.type = type;
       //  this.description = description;
         this.properties = new HashMap<>();
-        this.availableActions = new HashMap<>();
-        this.availableEvents = new HashMap<>();
-        this.actions = new HashMap<>();
-        this.events = new ArrayList<>();
-        this.subscribers = new HashSet<>();
+     //   this.availableActions = new HashMap<>();
+     //   this.availableEvents = new HashMap<>();
+     //   this.actions = new HashMap<>();
+     //   this.events = new ArrayList<>();
+     //   this.subscribers = new HashSet<>();
         this.hrefPrefix = "";
         this.wsHref = null;
         this.uiHref = null;
@@ -91,14 +91,14 @@ public class Thing {
         JSONObject obj = new JSONObject();
         JSONObject actions = new JSONObject();
         JSONObject events = new JSONObject();
-
+/*
         this.availableActions.forEach((name, value) -> {
             actions.put(name, value.getMetadata());
         });
 
         this.availableEvents.forEach((name, value) -> {
             events.put(name, value.getMetadata());
-        });
+        });*/
 
         try {
             obj.put("@context", this.context);
@@ -209,7 +209,7 @@ public class Thing {
      */
     public void setHrefPrefix(String prefix) {
         this.hrefPrefix = prefix;
-
+/*
         this.availableActions.forEach((name, value) -> {
             value.setHrefPrefix(prefix);
         });
@@ -217,16 +217,16 @@ public class Thing {
         this.availableEvents.forEach((name, value) -> {
             value.setHrefPrefix(prefix);
         });
-
+*/
         this.properties.forEach((name, value) -> {
             value.setHrefPrefix(prefix);
         });
-
+/*
         this.actions.forEach((actionName, list) -> {
             list.forEach((action) -> {
                 action.setHrefPrefix(prefix);
             });
-        });
+        }*/
     }
 
     /**
@@ -290,6 +290,7 @@ public class Thing {
      *
      * @return Action descriptions.
      */
+    /*
     public JSONArray getActionDescriptions() {
         JSONArray array = new JSONArray();
         this.actions.forEach((actionName, list) -> {
@@ -299,12 +300,13 @@ public class Thing {
         });
         return array;
     }
-
+*/
     /**
      * Get the thing's events as a JSONArray.
      *
      * @return Event descriptions.
      */
+    /*
     public JSONArray getEventDescriptions() {
         JSONArray array = new JSONArray();
         this.events.forEach((event) -> {
@@ -312,7 +314,7 @@ public class Thing {
         });
         return array;
     }
-
+*/
     /**
      * Add a property to this thing.
      *
@@ -340,7 +342,7 @@ public class Thing {
      * @param propertyName Name of the property to find
      * @return Property if found, else null.
      */
-    public Property findProperty(String propertyName) {
+    public  Property findProperty(String propertyName) {
         if (this.properties.containsKey(propertyName)) {
             return this.properties.get(propertyName);
         }
@@ -355,7 +357,7 @@ public class Thing {
      * @param <T>          Type of the property value
      * @return Current property value if found, else null.
      */
-    public <T> T getProperty(String propertyName) {
+    public  <T> T getProperty(String propertyName) {
         Property<T> prop = this.findProperty(propertyName);
         if (prop != null) {
             return prop.getValue();
@@ -397,6 +399,7 @@ public class Thing {
      * @param actionId   ID of the action
      * @return The requested action if found, else null.
      */
+    /*
     public Action getAction(String actionName, String actionId) {
         if (!this.actions.containsKey(actionName)) {
             return null;
@@ -412,23 +415,25 @@ public class Thing {
 
         return null;
     }
-
+*/
     /**
      * Add a new event and notify subscribers.
      *
      * @param event The event that occurred.
      */
+    /*
     public void addEvent(Event event) {
         this.events.add(event);
         this.eventNotify(event);
     }
-
+*/
     /**
      * Add an available event.
      *
      * @param name     Name of the event
      * @param metadata Event metadata, i.e. type, description, etc., as a Map
      */
+    /*
     public void addAvailableEvent(String name, Map<String, Object> metadata) {
         if (metadata == null) {
             metadata = new HashMap<>();
@@ -438,7 +443,7 @@ public class Thing {
 
         this.availableEvents.put(name, new AvailableEvent(metadata));
     }
-
+*/
     /**
      * Perform an action on the thing.
      *
@@ -446,6 +451,7 @@ public class Thing {
      * @param input      Any action inputs
      * @return The action that was created.
      */
+    /*
     public Action performAction(String actionName, JSONObject input) {
         if (!this.availableActions.containsKey(actionName)) {
             return null;
@@ -471,7 +477,7 @@ public class Thing {
             return null;
         }
     }
-
+*/
     /**
      * Remove an existing action.
      *
@@ -479,6 +485,7 @@ public class Thing {
      * @param actionId   ID of the action
      * @return Boolean indicating the presence of the action.
      */
+    /*
     public boolean removeAction(String actionName, String actionId) {
         Action action = this.getAction(actionName, actionId);
         if (action == null) {
@@ -489,7 +496,7 @@ public class Thing {
         this.actions.get(actionName).remove(action);
         return true;
     }
-
+*/
     /**
      * Add an available action.
      *
@@ -497,6 +504,7 @@ public class Thing {
      * @param metadata Action metadata, i.e. type, description, etc., as a Map
      * @param cls      Class to instantiate for this action
      */
+    /*
     public void addAvailableAction(String name,
                                    Map<String, Object> metadata,
                                    Class cls) {
@@ -509,21 +517,23 @@ public class Thing {
         this.availableActions.put(name, new AvailableAction(metadata, cls));
         this.actions.put(name, new ArrayList<>());
     }
-
+*/
     /**
      * Add a new websocket subscriber.
      *
      * @param ws The websocket
      */
+    /*
     public void addSubscriber(WebThingServer.ThingHandler.ThingWebSocket ws) {
         this.subscribers.add(ws);
     }
-
+*/
     /**
      * Remove a websocket subscriber.
      *
      * @param ws The websocket
      */
+    /*
     public void removeSubscriber(WebThingServer.ThingHandler.ThingWebSocket ws) {
         if (this.subscribers.contains(ws)) {
             this.subscribers.remove(ws);
@@ -533,33 +543,35 @@ public class Thing {
             this.removeEventSubscriber(name, ws);
         });
     }
-
+*/
     /**
      * Add a new websocket subscriber to an event.
      *
      * @param name Name of the event
      * @param ws   The websocket
      */
+    /*
     public void addEventSubscriber(String name,
                                    WebThingServer.ThingHandler.ThingWebSocket ws) {
         if (this.availableEvents.containsKey(name)) {
             this.availableEvents.get(name).addSubscriber(ws);
         }
     }
-
+*/
     /**
      * Remove a websocket subscriber from an event.
      *
      * @param name Name of the event
      * @param ws   The websocket
      */
+    /*
     public void removeEventSubscriber(String name,
                                       WebThingServer.ThingHandler.ThingWebSocket ws) {
         if (this.availableEvents.containsKey(name)) {
             this.availableEvents.get(name).removeSubscriber(ws);
         }
     }
-
+*/
     /**
      * Notify all subscribers of a property change.
      *
@@ -574,10 +586,10 @@ public class Thing {
         json.put("data", inner);
 
         String message = json.toString();
-
+/*
         this.subscribers.forEach((subscriber) -> {
             subscriber.sendMessage(message);
-        });
+        });*/
     }
 
     /**
@@ -585,6 +597,7 @@ public class Thing {
      *
      * @param action The action whose status changed
      */
+    /*
     public void actionNotify(Action action) {
         JSONObject json = new JSONObject();
 
@@ -592,17 +605,18 @@ public class Thing {
         json.put("data", action.asActionDescription());
 
         String message = json.toString();
-
+/*
         this.subscribers.forEach((subscriber) -> {
             subscriber.sendMessage(message);
         });
     }
-
+*/
     /**
      * Notify all subscribers of an event.
      *
      * @param event The event that occurred
      */
+    /*
     public void eventNotify(Event event) {
         String eventName = event.getName();
         if (!this.availableEvents.containsKey(eventName)) {
@@ -622,13 +636,13 @@ public class Thing {
                                 subscriber.sendMessage(message);
                             });
     }
-
+*/
     /**
      * Class to describe an event available for subscription.
      */
     private class AvailableEvent {
         private Map<String, Object> metadata;
-        private Set<WebThingServer.ThingHandler.ThingWebSocket> subscribers;
+  //      private Set<WebThingServer.ThingHandler.ThingWebSocket> subscribers;
 
         /**
          * Initialize the object.
@@ -637,7 +651,7 @@ public class Thing {
          */
         public AvailableEvent(Map<String, Object> metadata) {
             this.metadata = metadata;
-            this.subscribers = new HashSet<>();
+    //        this.subscribers = new HashSet<>();
         }
 
         /**
@@ -664,29 +678,32 @@ public class Thing {
          *
          * @param ws The websocket
          */
+        /*
         public void addSubscriber(WebThingServer.ThingHandler.ThingWebSocket ws) {
             this.subscribers.add(ws);
-        }
+        }*/
 
         /**
          * Remove a websocket subscriber from the event.
          *
          * @param ws The websocket
          */
+        /*
         public void removeSubscriber(WebThingServer.ThingHandler.ThingWebSocket ws) {
             if (this.subscribers.contains(ws)) {
                 this.subscribers.remove(ws);
             }
-        }
+        }*/
 
         /**
          * Get the set of subscribers for the event.
          *
          * @return The set of subscribers.
          */
+        /*
         public Set<WebThingServer.ThingHandler.ThingWebSocket> getSubscribers() {
             return this.subscribers;
-        }
+        }*/
     }
 
     /**
