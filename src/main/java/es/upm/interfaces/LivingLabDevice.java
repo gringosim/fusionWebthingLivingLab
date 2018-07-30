@@ -1,6 +1,6 @@
 package es.upm.interfaces;
 
 public interface LivingLabDevice {
-    public Object getDeviceState(Object device);
-    public Object setDeviceState(Object device,Object newState);
+    public Object getDeviceStatus(Object device);
+    public Object setDeviceStatus(Object device,Object newStatus);
 }

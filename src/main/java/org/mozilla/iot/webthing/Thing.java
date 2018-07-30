@@ -29,7 +29,7 @@ public class Thing {
     private List<String> type;
     private String name;
   //  private String description;
-    public Map<String, Property> properties;
+    public static Map<String, Property> properties;
   //  private Map<String, AvailableAction> availableActions;
   //  private Map<String, AvailableEvent> availableEvents;
    // private Map<String, List<Action>> actions;

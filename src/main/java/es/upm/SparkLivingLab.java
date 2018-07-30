@@ -7,21 +7,14 @@ import static spark.Spark.port;
 import static spark.Spark.secure;
 
 
-
-import com.auth0.jwt.JWT;
-import com.google.gson.JsonObject;
 import com.qmetric.spark.authentication.AuthenticationDetails;
 
-import es.upm.auth.JWTAuthHandler;
 import es.upm.auth.JWTAuthenticationFilter;
-import es.upm.auth.User;
 import es.upm.interfaces.LivingLabDevice;
 import es.upm.interfaces.UserUtils;
-import es.upm.interfaces.impl.DummyDevice;
+import es.upm.interfaces.impl.CreateDevice;
 import es.upm.ll.regex.TextRecognizer;
-import es.upm.p4act.LivingLabHandler;
-import es.upm.p4act.Plan4ActRequest;
-import fi.iki.elonen.NanoHTTPD;
+import es.upm.p4act.Plan4ActConstants;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +28,8 @@ import java.util.*;
 
 public class SparkLivingLab {
 
+
+
 	public static boolean up = true;
 	private static UserUtils userUtils;
 
@@ -46,6 +41,7 @@ public class SparkLivingLab {
 		public String[] onType = {"Property",
 				"Light",
 				"OnOffState"};
+
 
 		public ExampleDimmableLight() {
 			super("My Lamp",
@@ -142,24 +138,21 @@ public class SparkLivingLab {
 
 	public static void main(String[] args) {
 		System.out.println("Current dir: " + System.getProperty("user.dir"));
-		Thing light = new MultipleThings.ExampleDimmableLight();
+		Thing light = new ExampleDimmableLight();
+		//List<Property> propList = new ArrayList<>(Thing.properties.values());
+
 		JSONArray things = new JSONArray();
 		things.put(light.asThingDescription());
-		things.put(light.asThingDescription());
-		things.put(light.asThingDescription());
-		things.put(light.asThingDescription());
+
 
 		List<Thing> things_obj = new ArrayList<>();
 		things_obj.add(light);
-		things_obj.add(light);
-		things_obj.add(light);
-		things_obj.add(light);
+
 
 		List<LivingLabDevice> devices_obj = new ArrayList<>();
-		devices_obj.add(new DummyDevice());
-		devices_obj.add(new DummyDevice());
-		devices_obj.add(new DummyDevice());
-		devices_obj.add(new DummyDevice());
+		devices_obj.add(new CreateDevice());
+
+
 
 		//set https connection
 		//secure("keystore.jks", "password", null, null);
@@ -193,7 +186,7 @@ public class SparkLivingLab {
 	        String value = request.queryParams("value");
 	        String sequence = request.queryParams("sequence_number");
 		 */
-		before("/things",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
+	//	before("/things",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		get("/things", (request, response) -> {
 			//return DeviceManager.handleRequest(request, response);
 			response.header("Content-Type", "application/json");
@@ -208,9 +201,7 @@ public class SparkLivingLab {
 		        String value = request.queryParams("value");
 		        String sequence = request.queryParams("sequence_number");
 			 */
-		get("/plan4act", (request, response) -> {
-			return DeviceManager.handleRequest(request, response);
-		});
+
 		//handle HTTPS GET to path /device
 		get("/analizetext", (request, response) -> {
 					response.header("Content-Type", "application/json");
@@ -225,16 +216,19 @@ public class SparkLivingLab {
 
 
 		// These are matched in the order they are added.
-		before("things/:thingId/properties/:propertyName",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
+		//before("things/:thingId/properties/:propertyName",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		get("things/:thingId/properties/:propertyName", (request, response) -> {
-					String index = request.params(":thingId");
-					int idx = Integer.parseInt(index);
+
+			String index = request.params(":thingId");
+
+				int idx = Integer.parseInt(index);
 					String propertyName = request.params(":propertyName");
 					response.header("Content-Type", "application/json");
 					JSONObject obj = new JSONObject();
 					try {
+
 						Object val = things_obj.get(idx).getProperty(propertyName);
-						Object value = devices_obj.get(idx).getDeviceState(val);
+						Object value = devices_obj.get(idx).getDeviceStatus(val);
 						if (value == null) {
 							obj.put(propertyName, JSONObject.NULL);
 						} else {
@@ -249,6 +243,41 @@ public class SparkLivingLab {
 
 				}
 		);
+
+
+
+	//	before("/:thingId/properties",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
+		get("things/:thingId/properties", (request, response) -> {
+			String index = request.params(":thingId");
+			int idx = Integer.parseInt(index);
+			response.header("Content-Type", "application/json");
+			/* Metodo desde el JSONArray
+			JSONObject obj = new JSONObject();
+			try {
+				 JSONObject propiedad_de_la_cosa = ((JSONObject) things.get(idx)).getJSONObject("properties");
+				 obj.put("properties",propiedad_de_la_cosa);
+				return obj;
+			} catch (JSONException e) {
+				return "error a determinar";
+			}
+			*/
+			Thing cosa = things_obj.get(idx);
+			JSONObject obj = new JSONObject();
+			return obj.put("properties",cosa.getPropertyDescriptions());
+				}
+
+		);
+	//	before("/things/:thingId",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
+		get("/things/:thingId", (request, response) -> {
+			response.header("Content-Type", "application/json");
+			String index = request.params(":thingId");
+			int idx = Integer.parseInt(index);
+			return things.get(idx);
+				}
+		);
+
+
+
 
 		put("things/:thingId/properties/:propertyName", (request, response) -> {
 					JSONObject obj_value = new JSONObject(request.body());
@@ -262,7 +291,7 @@ public class SparkLivingLab {
 						Object vin = obj_value.get(propertyName);
 						System.out.println(vin);
 						Object val = things_obj.get(idx).getProperty(propertyName);
-						Object value = devices_obj.get(idx).setDeviceState("",vin);
+						Object value = devices_obj.get(idx).setDeviceStatus("",vin);
 						if (value == null) {
 							obj.put(propertyName, JSONObject.NULL);
 						} else {
@@ -275,35 +304,6 @@ public class SparkLivingLab {
 
 					//return DeviceManager.handleRequest(request, response);
 
-				}
-		);
-
-		before("/:thingId/properties",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-		get("/:thingId/properties", (request, response) -> {
-					return "/:thingId/properties";
-				}
-		);
-		before("/things/:thingId",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-		get("/things/:thingId", (request, response) -> {
-			response.header("Content-Type", "application/json");
-			String index = request.params(":thingId");
-			int idx = Integer.parseInt(index);
-			return things.get(idx);
-				}
-		);
-
-		get("/", (request, response) -> {
-					return "/";
-				}
-		);
-
-		get("/properties/:propertyName", (request, response) -> {
-					return "/properties/:propertyName";
-				}
-		);
-
-		get("/properties", (request, response) -> {
-					return "/properties";
 				}
 		);
 	}
