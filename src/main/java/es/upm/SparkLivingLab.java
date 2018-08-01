@@ -15,6 +15,8 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import com.mongodb.client.model.Sorts;
 import java.util.Arrays;
+
+
 import org.bson.Document;
 import com.qmetric.spark.authentication.AuthenticationDetails;
 
@@ -24,6 +26,7 @@ import es.upm.interfaces.UserUtils;
 import es.upm.interfaces.impl.CreateDevice;
 import es.upm.ll.regex.TextRecognizer;
 import es.upm.p4act.Plan4ActConstants;
+import org.bson.conversions.Bson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -183,25 +186,35 @@ public class SparkLivingLab {
 		MongoClient mongoClient = new MongoClient();
 		MongoDatabase database = mongoClient.getDatabase("ThingsDataBase");
 		MongoCollection<Document> collection = database.getCollection("Devices");
-		/*
-		final Document device= new Document("@type", new Document("Thing","Switch"));
-		device.append("name","My Lamp");
-		device.append("@context",Arrays.asList("http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+
+		final Document device_con_status= new Document("@type", new Document("Thing","Switch"));
+		device_con_status.append("name","My Lamp");
+		device_con_status.append("@context",Arrays.asList("http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
 				"http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
 				"http://iot.schema.org"));
-		device.append("properties",new Document("on", new Document("name", "Bathroom Light")
-														.append("outputType",new Document("type","boolean")
+		device_con_status.append("properties",new Document("on", new Document("name", "Bathroom Light")
+														.append("outputType",new Document("type","boolean"))
 														.append("inputType",new Document("type","boolean"))
 														.append("href","/0/properties/on")
 														.append("@type",Arrays.asList( "Property",
 																"Light", "OnOffState"))
-														.append("writable","true"))));
+														.append("writable",true)
+													)
+		);
+		device_con_status.append("Current Status",null);
 
-		collection.insertOne(device);
-*/
+		//collection.insertOne(device_con_status);
+/*
+		String device_id = "5b6181f4aa6b1b1fa875f931";
+		JSONObject id= new JSONObject();
+		id.put("_id",device_id);
+		DBObject query = new BasicDBObject("_id", device_id);
+		*/
+		Document device =  collection.find().first();
 
-		Document device=collection.find().first();
-		//System.out.println(device.toJson());
+	//	FindIterable<Document> devices =  collection.find((Bson) query);
+
+		System.out.println(device);
 
 
 		System.out.println("Current dir: " + System.getProperty("user.dir"));
@@ -288,6 +301,12 @@ public class SparkLivingLab {
 					JSONObject obj = new JSONObject();
 
 					try {
+						JSONArray ver= new JSONArray();
+						ver.put(device.get("Current status"));
+
+						return "Current status"+ver;
+
+						/*
 						Object val = things_obj.get(idx).getProperty(propertyName);
 						Object value = devices_obj.get(idx).getDeviceStatus(val);
 						if (value == null) {
@@ -296,6 +315,7 @@ public class SparkLivingLab {
 							obj.putOpt(propertyName, value);
 						}
 						return obj.toString();
+						*/
 					} catch (JSONException e) {
 						return "error a determinar";
 					}
@@ -351,14 +371,29 @@ public class SparkLivingLab {
 
 
 		put("things/:thingId/properties/:propertyName", (request, response) -> {
-					JSONObject obj_value = new JSONObject(request.body());
+			/*
+			JSONObject obj_value = new JSONObject(request.body());
 					System.out.println(request.body());
 					String index = request.params(":thingId");
 					int idx = Integer.parseInt(index);
 					String propertyName = request.params(":propertyName");
 					response.header("Content-Type", "application/json");
 					JSONObject obj = new JSONObject();
+					*/
+			response.header("Content-Type", "application/json");
 					try {
+					    JSONObject o = new JSONObject(request.body());
+						System.out.println(request.body());
+						JSONArray inputDev = new JSONArray();
+						inputDev.put(o.get("Current Status"));
+
+
+						UpdateResult result = collection.updateOne(Filters.eq("_id", device.get("_id")), new Document("$set", new Document("Current Status",inputDev.toString())));
+                       Document uDevice=collection.find().first();
+
+						return uDevice.toJson();
+
+						/*
 						Object vin = obj_value.get(propertyName);
 						System.out.println(vin);
 						Object val = things_obj.get(idx).getProperty(propertyName);
@@ -369,6 +404,7 @@ public class SparkLivingLab {
 							obj.putOpt(propertyName, value);
 						}
 						return obj.toString();
+						*/
 					} catch (JSONException e) {
 						return "error a determinar";
 					}

@@ -106,7 +106,7 @@ limitations under the License.
       <dependency>
           <groupId>org.mongodb</groupId>
           <artifactId>mongodb-driver</artifactId>
-          <version>3.6.4</version>
+          <version>3.8.0</version>
       </dependency>
   </dependencies>
   
