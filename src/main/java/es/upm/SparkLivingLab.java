@@ -6,7 +6,16 @@ import static spark.Spark.put;
 import static spark.Spark.port;
 import static spark.Spark.secure;
 
-
+import com.mongodb.*;
+import com.mongodb.MongoClient;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Filters;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
+import com.mongodb.client.model.Sorts;
+import java.util.Arrays;
+import org.bson.Document;
 import com.qmetric.spark.authentication.AuthenticationDetails;
 
 import es.upm.auth.JWTAuthenticationFilter;
@@ -25,6 +34,25 @@ import org.mozilla.iot.webthing.example.MultipleThings;
 
 import java.util.*;
 
+import com.mongodb.DBCursor;
+import com.mongodb.MongoClientURI;
+import com.mongodb.ServerAddress;
+
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
+
+import org.bson.Document;
+import java.util.Arrays;
+import com.mongodb.Block;
+
+import static com.mongodb.client.model.Filters.*;
+import com.mongodb.client.result.DeleteResult;
+import static com.mongodb.client.model.Updates.*;
+//import static sun.plugin2.util.PojoUtil.toJson;
+
+import com.mongodb.client.result.UpdateResult;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SparkLivingLab {
 
@@ -137,7 +165,6 @@ public class SparkLivingLab {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("Current dir: " + System.getProperty("user.dir"));
 		Thing light = new ExampleDimmableLight();
 		//List<Property> propList = new ArrayList<>(Thing.properties.values());
 
@@ -152,11 +179,38 @@ public class SparkLivingLab {
 		List<LivingLabDevice> devices_obj = new ArrayList<>();
 		devices_obj.add(new CreateDevice());
 
+		//initializing DataBase
+		MongoClient mongoClient = new MongoClient();
+		MongoDatabase database = mongoClient.getDatabase("ThingsDataBase");
+		MongoCollection<Document> collection = database.getCollection("Devices");
+		/*
+		final Document device= new Document("@type", new Document("Thing","Switch"));
+		device.append("name","My Lamp");
+		device.append("@context",Arrays.asList("http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+				"http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
+				"http://iot.schema.org"));
+		device.append("properties",new Document("on", new Document("name", "Bathroom Light")
+														.append("outputType",new Document("type","boolean")
+														.append("inputType",new Document("type","boolean"))
+														.append("href","/0/properties/on")
+														.append("@type",Arrays.asList( "Property",
+																"Light", "OnOffState"))
+														.append("writable","true"))));
+
+		collection.insertOne(device);
+*/
+
+		Document device=collection.find().first();
+		//System.out.println(device.toJson());
+
+
+		System.out.println("Current dir: " + System.getProperty("user.dir"));
+
 
 
 		//set https connection
-		//secure("keystore.jks", "password", null, null);
-		//System.out.println("Secure load certificate from keystore2.jks");
+		secure("password.jks", "password", null, null);
+		System.out.println("Secure load certificate from keystore2.jks");
 		//handle HTTPS GET to path /device
 		get("/info", (request, response) -> "Welcome to LivingLab!!!");
 
@@ -190,7 +244,14 @@ public class SparkLivingLab {
 		get("/things", (request, response) -> {
 			//return DeviceManager.handleRequest(request, response);
 			response.header("Content-Type", "application/json");
-			return things;
+
+
+			//JSONArray view= new JSONArray();
+			//view.put(collection.find());
+
+
+
+				return things;
 		});
 		//handle HTTP/HTTPS GET to path /plan4act http://localhost:8080/plan4act?cmd=set_status&device_id=BATHROOM_DOOR&device_name=BATHROOM_DOOR&value=1&sequence_number=35345
 			/*
@@ -225,8 +286,8 @@ public class SparkLivingLab {
 					String propertyName = request.params(":propertyName");
 					response.header("Content-Type", "application/json");
 					JSONObject obj = new JSONObject();
-					try {
 
+					try {
 						Object val = things_obj.get(idx).getProperty(propertyName);
 						Object value = devices_obj.get(idx).getDeviceStatus(val);
 						if (value == null) {
@@ -251,19 +312,29 @@ public class SparkLivingLab {
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
 			response.header("Content-Type", "application/json");
-			/* Metodo desde el JSONArray
-			JSONObject obj = new JSONObject();
+
+
 			try {
-				 JSONObject propiedad_de_la_cosa = ((JSONObject) things.get(idx)).getJSONObject("properties");
-				 obj.put("properties",propiedad_de_la_cosa);
-				return obj;
+
+						JSONArray ver= new JSONArray();
+						ver.put(device.get("properties"));
+
+						return ver;
+				/*
+				Thing cosa = things_obj.get(idx);
+				JSONObject obj = new JSONObject();
+				return obj.put("properties",cosa.getPropertyDescriptions());
+				*/
+				//===========================================================
+				//método alternativo
+				// JSONObject propiedad_de_la_cosa = ((JSONObject) things.get(idx)).getJSONObject("properties");
+				// obj.put("properties",propiedad_de_la_cosa);
+				//	return obj;
 			} catch (JSONException e) {
 				return "error a determinar";
 			}
-			*/
-			Thing cosa = things_obj.get(idx);
-			JSONObject obj = new JSONObject();
-			return obj.put("properties",cosa.getPropertyDescriptions());
+
+
 				}
 
 		);

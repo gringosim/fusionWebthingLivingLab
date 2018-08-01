@@ -3,7 +3,10 @@ package es.upm.interfaces.impl;
 import es.upm.interfaces.LivingLabDevice;
 
 public class CreateDevice implements LivingLabDevice {
-    private boolean status = false;
+    private boolean status;
+
+
+
     @Override
     public Object getDeviceStatus(Object device) {
         boolean copy_prev_status = status;
