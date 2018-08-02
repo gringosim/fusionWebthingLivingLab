@@ -17,34 +17,35 @@
     <session id="-337147830">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="3" />
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.11" value="1" />
           <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.36" value="1" />
           <entry key="project.open.time.39" value="1" />
           <entry key="project.open.time.41" value="1" />
+          <entry key="project.open.time.42" value="1" />
           <entry key="project.open.time.47" value="1" />
-          <entry key="project.opened" value="6" />
+          <entry key="project.opened" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="6" />
           <entry key="gitignore" value="47" />
-          <entry key="java" value="6500" />
-          <entry key="xml" value="5" />
+          <entry key="java" value="8406" />
+          <entry key="xml" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="6500" />
+          <entry key="JAVA" value="8406" />
           <entry key="PLAIN_TEXT" value="53" />
-          <entry key="XML" value="5" />
+          <entry key="XML" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="class" value="3" />
+          <entry key="class" value="4" />
           <entry key="gitignore" value="2" />
           <entry key="java" value="38" />
           <entry key="xml" value="2" />
@@ -52,7 +53,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CLASS" value="3" />
+          <entry key="CLASS" value="4" />
           <entry key="JAVA" value="38" />
           <entry key="PLAIN_TEXT" value="2" />
           <entry key="XML" value="2" />
@@ -112,8 +113,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="215">
-              <caret line="395" column="26" lean-forward="true" selection-start-line="395" selection-start-column="26" selection-end-line="395" selection-end-column="26" />
+            <state relative-caret-position="462">
+              <caret line="217" lean-forward="true" selection-start-line="217" selection-end-line="217" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -124,8 +125,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="108" column="24" selection-start-line="108" selection-start-column="24" selection-end-line="108" selection-end-column="24" />
+            <state relative-caret-position="210">
+              <caret line="110" selection-start-line="110" selection-end-line="110" />
             </state>
           </provider>
         </entry>
@@ -196,10 +197,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1404" />
+    <option name="x" value="1380" />
     <option name="y" value="14" />
-    <option name="width" value="1378" />
-    <option name="height" value="834" />
+    <option name="width" value="1382" />
+    <option name="height" value="784" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -207,8 +208,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -262,11 +261,13 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1533132883798" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1533220483584" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../webthing-java" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
@@ -364,7 +365,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1404" y="14" width="1378" height="834" extended-state="0" />
+    <frame x="1380" y="14" width="1382" height="784" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Designer" order="0" />
       <window_info id="UI Designer" order="1" />
@@ -372,7 +374,7 @@
       <window_info id="Capture Tool" order="3" />
       <window_info id="Favorites" order="4" side_tool="true" />
       <window_info id="Image Layers" order="5" />
-      <window_info content_ui="combo" id="Project" order="6" sideWeight="0.49903288" visible="true" weight="0.21699545" />
+      <window_info content_ui="combo" id="Project" order="6" sideWeight="0.49903288" visible="true" weight="0.2193646" />
       <window_info id="Structure" order="7" sideWeight="0.50096714" side_tool="true" weight="0.16071428" />
       <window_info anchor="bottom" id="Terminal" order="0" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
@@ -380,7 +382,7 @@
       <window_info anchor="bottom" id="Messages" order="3" weight="0.3259587" />
       <window_info anchor="bottom" id="Message" order="4" />
       <window_info active="true" anchor="bottom" id="Find" order="5" visible="true" weight="0.13421829" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.28761062" />
+      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.31050956" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -572,16 +574,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="172">
           <caret line="606" column="49" selection-start-line="606" selection-start-column="49" selection-end-line="606" selection-end-column="49" />
-          <folding>
-            <element signature="docComment;class#WebThingServer#0" />
-            <element signature="docComment;method#start#0;class#WebThingServer#0" />
-            <element signature="method#start#0;class#WebThingServer#0" />
-            <element signature="docComment;method#stop#0;class#WebThingServer#0" />
-            <element signature="method#stop#0;class#WebThingServer#0" />
-            <element signature="class#SSLOptions#0;class#WebThingServer#0" />
-            <element signature="class#BaseHandler#0;class#WebThingServer#0" />
-            <element signature="class#MultipleThings#0;class#WebThingServer#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -621,6 +613,13 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/ScriptReader.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/interfaces/Configuration.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/mozilla/iot/webthing/Thing.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5368">
@@ -662,10 +661,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/interfaces/Configuration.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/interfaces/LivingLabDevice.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="88">
-          <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+          <caret line="4" column="28" selection-start-line="4" selection-start-column="28" selection-end-line="4" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -676,24 +675,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/interfaces/LivingLabDevice.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/org/json/json/20180130/json-20180130.jar!/org/json/JSONObject.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="28" selection-start-line="4" selection-start-column="28" selection-end-line="4" selection-end-column="28" />
+        <state relative-caret-position="151">
+          <caret line="234" selection-start-line="234" selection-end-line="234" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="108" column="24" selection-start-line="108" selection-start-column="24" selection-end-line="108" selection-end-column="24" />
+        <state relative-caret-position="210">
+          <caret line="110" selection-start-line="110" selection-end-line="110" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="395" column="26" lean-forward="true" selection-start-line="395" selection-start-column="26" selection-end-line="395" selection-end-column="26" />
+        <state relative-caret-position="462">
+          <caret line="217" lean-forward="true" selection-start-line="217" selection-end-line="217" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

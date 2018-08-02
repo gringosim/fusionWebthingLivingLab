@@ -6,6 +6,8 @@ import static spark.Spark.put;
 import static spark.Spark.port;
 import static spark.Spark.secure;
 
+import org.bson.BSONObject;
+import org.bson.types.ObjectId;
 import com.mongodb.*;
 import com.mongodb.MongoClient;
 import com.mongodb.client.*;
@@ -14,8 +16,10 @@ import com.mongodb.client.model.Filters;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import com.mongodb.client.model.Sorts;
-import java.util.Arrays;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+import com.mongodb.DBObject;
 
 import org.bson.Document;
 import com.qmetric.spark.authentication.AuthenticationDetails;
@@ -27,6 +31,7 @@ import es.upm.interfaces.impl.CreateDevice;
 import es.upm.ll.regex.TextRecognizer;
 import es.upm.p4act.Plan4ActConstants;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +48,7 @@ import com.mongodb.ServerAddress;
 
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
-
+import org.bson.types.ObjectId;
 import org.bson.Document;
 import java.util.Arrays;
 import com.mongodb.Block;
@@ -203,18 +208,19 @@ public class SparkLivingLab {
 		);
 		device_con_status.append("Current Status",null);
 
-		//collection.insertOne(device_con_status);
-/*
-		String device_id = "5b6181f4aa6b1b1fa875f931";
-		JSONObject id= new JSONObject();
-		id.put("_id",device_id);
-		DBObject query = new BasicDBObject("_id", device_id);
-		*/
-		Document device =  collection.find().first();
+		//device_con_status.put("_id", new ObjectId("000000000000000000000023"));
+		collection.insertOne(device_con_status);
+		ObjectId id = (ObjectId)device_con_status.get( "_id" );
 
-	//	FindIterable<Document> devices =  collection.find((Bson) query);
+		DBObject filter = new BasicDBObject();
+		filter.put( "_id", new ObjectId(id.toString()));
+		Document device =  collection.find(((BasicDBObject) filter)).first();
 
 		System.out.println(device);
+		System.out.println(id);
+
+
+
 
 
 		System.out.println("Current dir: " + System.getProperty("user.dir"));
@@ -386,10 +392,8 @@ public class SparkLivingLab {
 						System.out.println(request.body());
 						JSONArray inputDev = new JSONArray();
 						inputDev.put(o.get("Current Status"));
-
-
-						UpdateResult result = collection.updateOne(Filters.eq("_id", device.get("_id")), new Document("$set", new Document("Current Status",inputDev.toString())));
-                       Document uDevice=collection.find().first();
+						collection.updateOne(Filters.eq("_id", device.get("_id")), new Document("$set", new Document("Current Status",inputDev.toString())));
+                       	Document uDevice=collection.find().first();
 
 						return uDevice.toJson();
 
