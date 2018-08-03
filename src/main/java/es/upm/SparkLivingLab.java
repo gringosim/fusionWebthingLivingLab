@@ -25,9 +25,9 @@ import org.bson.Document;
 import com.qmetric.spark.authentication.AuthenticationDetails;
 
 import es.upm.auth.JWTAuthenticationFilter;
-import es.upm.interfaces.LivingLabDevice;
+
 import es.upm.interfaces.UserUtils;
-import es.upm.interfaces.impl.CreateDevice;
+
 import es.upm.ll.regex.TextRecognizer;
 import es.upm.p4act.Plan4ActConstants;
 import org.bson.conversions.Bson;
@@ -184,23 +184,42 @@ public class SparkLivingLab {
 		things_obj.add(light);
 
 
-		List<LivingLabDevice> devices_obj = new ArrayList<>();
-		devices_obj.add(new CreateDevice());
+
 
 		//initializing DataBase
+
 		MongoClient mongoClient = new MongoClient();
 		MongoDatabase database = mongoClient.getDatabase("ThingsDataBase");
 		MongoCollection<Document> collection = database.getCollection("Devices");
+		//==========================================================
+		DevicesCreator bathroom_light = new DevicesCreator();
+		bathroom_light.devStatus=null;
+		bathroom_light.inputThingType="Switch";
+		bathroom_light.inputType="boolean";
+		bathroom_light.outputType="boolean";
+		bathroom_light.name="Bathroom Lamp";
+		bathroom_light.propertyName="On";
+		bathroom_light.propType="OnOffState";
+		bathroom_light.writable="true";
+		//===============================================================
 
-		final Document device_con_status= new Document("@type", new Document("Thing","Switch"));
+
+
+		Document device_con_status= new Document();
+		collection.insertOne(device_con_status);
+		ObjectId id = (ObjectId)device_con_status.get( "_id" );
+		device_con_status= new Document("@type", new Document("Thing","Switch"));
 		device_con_status.append("name","My Lamp");
+		device_con_status.append("href","/"+id.toString());
 		device_con_status.append("@context",Arrays.asList("http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
 				"http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
 				"http://iot.schema.org"));
+		Document link= new Document();
+		link.append("href","/"+id.toString()+"/properties/on").append("mediaType","application/json");
 		device_con_status.append("properties",new Document("on", new Document("name", "Bathroom Light")
 														.append("outputType",new Document("type","boolean"))
 														.append("inputType",new Document("type","boolean"))
-														.append("href","/0/properties/on")
+				   										.append("link",link)
 														.append("@type",Arrays.asList( "Property",
 																"Light", "OnOffState"))
 														.append("writable",true)
@@ -208,15 +227,22 @@ public class SparkLivingLab {
 		);
 		device_con_status.append("Current Status",null);
 
-		//device_con_status.put("_id", new ObjectId("000000000000000000000023"));
-		collection.insertOne(device_con_status);
-		ObjectId id = (ObjectId)device_con_status.get( "_id" );
+
+		//device_con_status.put("href", "000000000000000000000023");
+
+		//collection.insertOne(device_con_status);
+		//ObjectId id = (ObjectId)device_con_status.get( "_id" );
 
 		DBObject filter = new BasicDBObject();
 		filter.put( "_id", new ObjectId(id.toString()));
-		Document device =  collection.find(((BasicDBObject) filter)).first();
+		collection.updateOne(Filters.eq("_id", id), new Document("$set", device_con_status));
+		Document projection = new Document();
+		projection.append("_id",0).append("Current Status",0);
+		Document device =  collection.find((Bson) filter).projection(exclude("Current Status","_id")).first();
 
-		System.out.println(device);
+		//device.remove("_id");
+		//device.remove("Current Status");
+		System.out.println(device.toJson());
 		System.out.println(id);
 
 
@@ -265,12 +291,13 @@ public class SparkLivingLab {
 			response.header("Content-Type", "application/json");
 
 
-			//JSONArray view= new JSONArray();
-			//view.put(collection.find());
+			BasicDBObject view= new BasicDBObject() ;
+
+			view.put("Things",collection.find());
 
 
 
-				return things;
+				return view;
 		});
 		//handle HTTP/HTTPS GET to path /plan4act http://localhost:8080/plan4act?cmd=set_status&device_id=BATHROOM_DOOR&device_name=BATHROOM_DOOR&value=1&sequence_number=35345
 			/*
