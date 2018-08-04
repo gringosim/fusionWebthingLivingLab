@@ -201,6 +201,7 @@ public class SparkLivingLab {
 		bathroom_light.propertyName="On";
 		bathroom_light.propType="OnOffState";
 		bathroom_light.writable="true";
+		System.out.println(DevicesCreator.assembleDevice(bathroom_light));
 		//===============================================================
 
 
@@ -244,7 +245,6 @@ public class SparkLivingLab {
 		//device.remove("Current Status");
 		System.out.println(device.toJson());
 		System.out.println(id);
-
 
 
 
