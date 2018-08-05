@@ -35,6 +35,7 @@ import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONString;
 import org.mozilla.iot.webthing.Property;
 import org.mozilla.iot.webthing.Thing;
 import org.mozilla.iot.webthing.Value;
@@ -200,15 +201,16 @@ public class SparkLivingLab {
 		bathroom_light.name="Bathroom Lamp";
 		bathroom_light.propertyName="On";
 		bathroom_light.propType="OnOffState";
-		bathroom_light.writable="true";
+		bathroom_light.writable=true;
 		System.out.println(DevicesCreator.assembleDevice(bathroom_light));
 		//===============================================================
 
 
 
-		Document device_con_status= new Document();
+		Document device_con_status= new Document(DevicesCreator.assembleDevice(bathroom_light));
 		collection.insertOne(device_con_status);
 		ObjectId id = (ObjectId)device_con_status.get( "_id" );
+		/*
 		device_con_status= new Document("@type", new Document("Thing","Switch"));
 		device_con_status.append("name","My Lamp");
 		device_con_status.append("href","/"+id.toString());
@@ -227,7 +229,8 @@ public class SparkLivingLab {
 													)
 		);
 		device_con_status.append("Current Status",null);
-
+		*/
+System.out.println("....."+device_con_status.toJson());
 
 		//device_con_status.put("href", "000000000000000000000023");
 
@@ -443,6 +446,48 @@ public class SparkLivingLab {
 					//return DeviceManager.handleRequest(request, response);
 
 				}
+
+
 		);
+        put("things/add", (request, response) -> {
+            /*
+            ---------------------------
+            JSON Body request
+            ---------------------------
+            {
+            "Device Name": "String value",
+            "Initial Status": boolean,
+            "Thing Type": "String value",
+            "Input Type":"String value",
+            "Output Type":"String value",
+            "Property name":"String value",
+            "Property Type":"String value",
+            "Writable Device": boolean
+            }
+            ================================================
+             */
+            DevicesCreator addDev = new DevicesCreator();
+            try {
+                JSONObject vars = new JSONObject(request.body()) {
+                };
+                System.out.println(request.body());
+
+                addDev.name=vars.get("Device Name").toString();
+                addDev.devStatus=vars.getBoolean("Initial Status");
+                addDev.inputThingType=vars.get("Thing Type").toString();
+                addDev.inputType=vars.get("Input Type").toString();
+                addDev.outputType=vars.get("Output Type").toString();
+                addDev.propertyName=vars.get("Property name").toString();
+                addDev.propType=vars.get("Property Type").toString();
+                addDev.writable=vars.getBoolean("Writable Device");
+                Document LLDev = new Document(DevicesCreator.assembleDevice(addDev));
+                collection.insertOne(LLDev);
+                return "Device "+addDev.name+" has been created successfully";
+
+
+            } catch (JSONException e) {
+                return "Unable to create the Device";
+            }
+        });
 	}
 }
