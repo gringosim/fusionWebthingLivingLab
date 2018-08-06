@@ -74,115 +74,10 @@ public class SparkLivingLab {
 		userUtils = (UserUtils) service;
 	}
 
-	public static class ExampleDimmableLight extends Thing {
-		public String[] onType = {"Property",
-				"Light",
-				"OnOffState"};
 
-
-		public ExampleDimmableLight() {
-			super("My Lamp",
-					Arrays.asList("Thing", "Switch")// Eze: modificado según JSON modelo
-			);
-
-			Map<String, Object> onDescription = new HashMap<>();
-			onDescription.put("name", "Bathroom light");
-
-			JSONObject inputType = new JSONObject();
-			JSONObject outputType = new JSONObject();
-			JSONObject link = new JSONObject();
-			inputType.put("type", "boolean");
-			onDescription.put("inputType", inputType);
-			outputType.put("type", "boolean");
-			onDescription.put("outputType", outputType);
-			onDescription.put("@type", onType);
-			link.put("href", String.format("/properties/%s", "on"));
-			link.put("mediaType", "application/json");
-			//onDescription.put("link",link);
-			// onDescription.put("@type", "OnOffProperty");
-			//  onDescription.put("label", "On/Off");
-			//  onDescription.put("inputType", "boolean");
-			onDescription.put("writable", "true");
-
-			Value<Boolean> on = new Value<>(true,
-					// Here, you could send a signal to
-					// the GPIO that switches the lamp
-					// off
-					v -> System.out.printf(
-							"On-State is now %s\n",
-							v));
-
-			this.addProperty(new Property(this, "on", on, onDescription));
-
-           /* Map<String, Object> brightnessDescription = new HashMap<>();
-            brightnessDescription.put("@type", "BrightnessProperty");
-            brightnessDescription.put("label", "Brightness");
-            brightnessDescription.put("type", "number");
-            brightnessDescription.put("description",
-                                      "The level of light from 0-100");
-            brightnessDescription.put("minimum", 0);
-            brightnessDescription.put("maximum", 100);
-            brightnessDescription.put("unit", "percent");
-
-
-            Value<Integer> brightness = new Value<>(50,
-                                                    // Here, you could send a signal
-                                                    // to the GPIO that controls the
-                                                    // brightness
-                                                    l -> System.out.printf(
-                                                            "Brightness is now %s\n",
-                                                            l));
-
-            this.addProperty(new Property(this,
-                                          "brightness",
-                                          brightness,
-                                          brightnessDescription));*/
-
-			Map<String, Object> fadeMetadata = new HashMap<>();
-			Map<String, Object> fadeInput = new HashMap<>();
-			Map<String, Object> fadeProperties = new HashMap<>();
-			Map<String, Object> fadeBrightness = new HashMap<>();
-			Map<String, Object> fadeDuration = new HashMap<>();
-			fadeMetadata.put("label", "Fade");
-			fadeMetadata.put("description", "Fade the lamp to a given level");
-			fadeInput.put("type", "object");
-			fadeInput.put("required", new String[]{"brightness", "duration"});
-			fadeBrightness.put("type", "number");
-			fadeBrightness.put("minimum", 0);
-			fadeBrightness.put("maximum", 100);
-			fadeBrightness.put("unit", "percent");
-			fadeDuration.put("type", "number");
-			fadeDuration.put("minimum", 1);
-			fadeDuration.put("unit", "milliseconds");
-			fadeProperties.put("brightness", fadeBrightness);
-			fadeProperties.put("duration", fadeDuration);
-			fadeInput.put("properties", fadeProperties);
-			fadeMetadata.put("input", fadeInput);
-			// this.addAvailableAction("fade", fadeMetadata, FadeAction.class);
-
-			Map<String, Object> overheatedMetadata = new HashMap<>();
-			overheatedMetadata.put("description",
-					"The lamp has exceeded its safe operating temperature");
-			overheatedMetadata.put("type", "number");
-			overheatedMetadata.put("unit", "celsius");
-			//   this.addAvailableEvent("overheated", overheatedMetadata);
-		}
-
-
-
-
-	}
 
 	public static void main(String[] args) {
-		Thing light = new ExampleDimmableLight();
-		//List<Property> propList = new ArrayList<>(Thing.properties.values());
 
-		JSONArray things = new JSONArray();
-		things.put(light.asThingDescription());
-
-
-		List<Thing> things_obj = new ArrayList<>();
-		things_obj.add(light);
 
 
 
@@ -192,6 +87,7 @@ public class SparkLivingLab {
 		MongoClient mongoClient = new MongoClient();
 		MongoDatabase database = mongoClient.getDatabase("ThingsDataBase");
 		MongoCollection<Document> collection = database.getCollection("Devices");
+	/*
 		//==========================================================
 		DevicesCreator bathroom_light = new DevicesCreator();
 		bathroom_light.devStatus=null;
@@ -205,37 +101,37 @@ public class SparkLivingLab {
 		System.out.println(DevicesCreator.assembleDevice(bathroom_light));
 		//===============================================================
 
+*/
 
-
-		Document device_con_status= new Document(DevicesCreator.assembleDevice(bathroom_light));
+	//	Document device_con_status= new Document(DevicesCreator.assembleDevice(bathroom_light));
+		Document device_con_status=new Document();
 		collection.insertOne(device_con_status);
 		ObjectId id = (ObjectId)device_con_status.get( "_id" );
-		/*
+		int devSerial=6;
 		device_con_status= new Document("@type", new Document("Thing","Switch"));
-		device_con_status.append("name","My Lamp");
-		device_con_status.append("href","/"+id.toString());
+		device_con_status.append("name","My .... Lamp");
+		//device_con_status.append("href","/"+id.toString());
+		device_con_status.append("href","/"+devSerial);
 		device_con_status.append("@context",Arrays.asList("http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
 				"http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
 				"http://iot.schema.org"));
 		Document link= new Document();
-		link.append("href","/"+id.toString()+"/properties/on").append("mediaType","application/json");
-		device_con_status.append("properties",new Document("on", new Document("name", "Bathroom Light")
+		link.append("href","/"+devSerial+"/properties/on").append("mediaType","application/json");
+		//link.append("href","/"+id.toString()+"/properties/on").append("mediaType","application/json");
+		device_con_status.append("properties",new Document("on", new Document("name", "B")
 														.append("outputType",new Document("type","boolean"))
 														.append("inputType",new Document("type","boolean"))
 				   										.append("link",link)
 														.append("@type",Arrays.asList( "Property",
 																"Light", "OnOffState"))
-														.append("writable",true)
+														.append("writable",false)
 													)
 		);
 		device_con_status.append("Current Status",null);
-		*/
-System.out.println("....."+device_con_status.toJson());
 
-		//device_con_status.put("href", "000000000000000000000023");
 
-		//collection.insertOne(device_con_status);
-		//ObjectId id = (ObjectId)device_con_status.get( "_id" );
+		final JSONObject device_show_status= new JSONObject(device_con_status.toJson());
+		System.out.println(device_show_status);
 
 		DBObject filter = new BasicDBObject();
 		filter.put( "_id", new ObjectId(id.toString()));
@@ -279,15 +175,6 @@ System.out.println("....."+device_con_status.toJson());
 		});
 
 
-		//handle HTTP/HTTPS GET to path /device http://localhost:8080/device?cmd=set_status&device_id=BATHROOM_DOOR&device_name=BATHROOM_DOOR&value=1&sequence_number=35345
-		/*
-		    String version = request.queryParams("version");
-	        String cmd = request.queryParams("cmd");
-	        String device_id = request.queryParams("device_id");
-	        String device_name = request.queryParams("device_name");
-	        String value = request.queryParams("value");
-	        String sequence = request.queryParams("sequence_number");
-		 */
 	//	before("/things",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		get("/things", (request, response) -> {
 			//return DeviceManager.handleRequest(request, response);
@@ -302,15 +189,6 @@ System.out.println("....."+device_con_status.toJson());
 
 				return view;
 		});
-		//handle HTTP/HTTPS GET to path /plan4act http://localhost:8080/plan4act?cmd=set_status&device_id=BATHROOM_DOOR&device_name=BATHROOM_DOOR&value=1&sequence_number=35345
-			/*
-			    String version = request.queryParams("version");
-		        String cmd = request.queryParams("cmd");
-		        String device_id = request.queryParams("device_id");
-		        String device_name = request.queryParams("device_name");
-		        String value = request.queryParams("value");
-		        String sequence = request.queryParams("sequence_number");
-			 */
 
 		//handle HTTPS GET to path /device
 		get("/analizetext", (request, response) -> {
@@ -331,32 +209,22 @@ System.out.println("....."+device_con_status.toJson());
 
 			String index = request.params(":thingId");
 
-				int idx = Integer.parseInt(index);
+			long idx = Integer.parseInt(index);
 					String propertyName = request.params(":propertyName");
 					response.header("Content-Type", "application/json");
 					JSONObject obj = new JSONObject();
 
 					try {
 						JSONArray ver= new JSONArray();
-						ver.put(device.get("Current status"));
+						ver.put(device_show_status.get("Current Status"));
 
-						return "Current status"+ver;
+						return ver;
 
-						/*
-						Object val = things_obj.get(idx).getProperty(propertyName);
-						Object value = devices_obj.get(idx).getDeviceStatus(val);
-						if (value == null) {
-							obj.put(propertyName, JSONObject.NULL);
-						} else {
-							obj.putOpt(propertyName, value);
-						}
-						return obj.toString();
-						*/
 					} catch (JSONException e) {
 						return "error a determinar";
 					}
 
-					//return DeviceManager.handleRequest(request, response);
+
 
 				}
 		);
@@ -368,14 +236,16 @@ System.out.println("....."+device_con_status.toJson());
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
 			response.header("Content-Type", "application/json");
-
+			DBObject propFilter = new BasicDBObject();
+			propFilter.put( "href", "/"+idx);
 
 			try {
+				Document show =  collection.find((Bson) propFilter).first();
+				System.out.println("desde things/bathroom_light/properties"+show.toJson());
+				JSONObject showProp= new JSONObject(show.toJson());
 
-						JSONArray ver= new JSONArray();
-						ver.put(device.get("properties"));
 
-						return ver;
+						return showProp.get("properties");
 				/*
 				Thing cosa = things_obj.get(idx);
 				JSONObject obj = new JSONObject();
@@ -399,7 +269,7 @@ System.out.println("....."+device_con_status.toJson());
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
-			return things.get(idx);
+			return null;//things.get(idx);
 				}
 		);
 
@@ -427,23 +297,11 @@ System.out.println("....."+device_con_status.toJson());
 
 						return uDevice.toJson();
 
-						/*
-						Object vin = obj_value.get(propertyName);
-						System.out.println(vin);
-						Object val = things_obj.get(idx).getProperty(propertyName);
-						Object value = devices_obj.get(idx).setDeviceStatus("",vin);
-						if (value == null) {
-							obj.put(propertyName, JSONObject.NULL);
-						} else {
-							obj.putOpt(propertyName, value);
-						}
-						return obj.toString();
-						*/
 					} catch (JSONException e) {
 						return "error a determinar";
 					}
 
-					//return DeviceManager.handleRequest(request, response);
+
 
 				}
 

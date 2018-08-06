@@ -14,6 +14,7 @@ public class DevicesCreator {
     public static String inputType;
     public static String outputType;
     public static Boolean devStatus;
+    
 
     public static Document assembleDevice(DevicesCreator gen) {
 
