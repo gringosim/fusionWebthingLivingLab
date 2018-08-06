@@ -6,6 +6,7 @@ import static spark.Spark.put;
 import static spark.Spark.port;
 import static spark.Spark.secure;
 
+import es.upm.ll.uAALBridge;
 import org.bson.BSONObject;
 import org.bson.types.ObjectId;
 import com.mongodb.*;
@@ -190,13 +191,16 @@ public class SparkLivingLab {
 			response.header("Content-Type", "application/json");
 
 
+
+
 			BasicDBObject view= new BasicDBObject() ;
 
 			view.put("Things",collection.find());
 			JSONObject showDev= new JSONObject(view.toJson());
-
-
-				return showDev.get("Things");
+			uAALBridge bridgeTouAAL = new uAALBridge();
+			String vadURL = "http://192.168.1.144:8181/uAALServices/Devices";
+			return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
+				//return showDev.get("Things");
 		});
 
 		//handle HTTPS GET to path /device
@@ -227,9 +231,14 @@ public class SparkLivingLab {
 						JSONObject showProp= new JSONObject(show.toJson());
 						JSONObject view= new JSONObject();
 						view.put("Status",showProp.get("Current Status"));
+						//return view;
+						//======================================================================
+						//Implementación de Bridge a uAAL
+						uAALBridge bridgeTouAAL = new uAALBridge();
+						String vadURL = "http://192.168.1.144:8181/uAALServices/lights_Kitchen";
+						return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
+						//=======================================================================
 
-
-						return view;
 
 					} catch (JSONException e) {
 						return "error a determinar";
