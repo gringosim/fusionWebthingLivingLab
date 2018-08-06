@@ -1,4 +1,7 @@
 package es.upm;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.json.JSONObject;
 
@@ -13,13 +16,16 @@ public class DevicesCreator {
     public static String propType;// OnOffState
     public static String inputType;
     public static String outputType;
-    public static Boolean devStatus;
-    
+    public static String devHref;
+   public static long devSerial;
+   public static boolean devStatus;
+
+
 
     public static Document assembleDevice(DevicesCreator gen) {
 
         Document LLthing = new Document();
-        Document link = new Document("href", "0/properties/on")
+        Document link = new Document("href", devSerial+"/properties/on")
                             .append("mediaType", "application/json");
         Document property = new Document("@type", Arrays.asList("Property", gen.propType))
                             .append("inputType", new Document("type", gen.inputType))
@@ -40,7 +46,7 @@ public class DevicesCreator {
                 .append("@type",Arrays.asList("Thing", gen.inputThingType))
                 .append("name", gen.name)
                 .append("properties",properties)
-                .append("Status", gen.devStatus)
+                .append("href",gen.devHref )
                 .append("security",security);
 
         return LLthing;

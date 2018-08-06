@@ -87,27 +87,31 @@ public class SparkLivingLab {
 		MongoClient mongoClient = new MongoClient();
 		MongoDatabase database = mongoClient.getDatabase("ThingsDataBase");
 		MongoCollection<Document> collection = database.getCollection("Devices");
-	/*
+
+		long docCount=collection.countDocuments();
 		//==========================================================
-		DevicesCreator bathroom_light = new DevicesCreator();
-		bathroom_light.devStatus=null;
-		bathroom_light.inputThingType="Switch";
-		bathroom_light.inputType="boolean";
-		bathroom_light.outputType="boolean";
-		bathroom_light.name="Bathroom Lamp";
-		bathroom_light.propertyName="On";
-		bathroom_light.propType="OnOffState";
-		bathroom_light.writable=true;
-		System.out.println(DevicesCreator.assembleDevice(bathroom_light));
+		DevicesCreator newDevice = new DevicesCreator();
+		newDevice.devHref="/"+docCount;
+		newDevice.inputThingType="Switch";
+		newDevice.inputType="boolean";
+		newDevice.outputType="boolean";
+		newDevice.name="Bathroom Lamp";
+		newDevice.propertyName="On";
+		newDevice.propType="OnOffState";
+		newDevice.writable=true;
+		newDevice.devSerial=docCount;
+
+		System.out.println(DevicesCreator.assembleDevice(newDevice));
 		//===============================================================
 
-*/
 
-	//	Document device_con_status= new Document(DevicesCreator.assembleDevice(bathroom_light));
-		Document device_con_status=new Document();
+
+		Document device_con_status= new Document(DevicesCreator.assembleDevice(newDevice));
+		//Document device_con_status=new Document();
 		collection.insertOne(device_con_status);
+
 		ObjectId id = (ObjectId)device_con_status.get( "_id" );
-		int devSerial=6;
+	/*
 		device_con_status= new Document("@type", new Document("Thing","Switch"));
 		device_con_status.append("name","My .... Lamp");
 		//device_con_status.append("href","/"+id.toString());
@@ -130,12 +134,14 @@ public class SparkLivingLab {
 		device_con_status.append("Current Status",null);
 
 
-		final JSONObject device_show_status= new JSONObject(device_con_status.toJson());
-		System.out.println(device_show_status);
+*/
+
 
 		DBObject filter = new BasicDBObject();
 		filter.put( "_id", new ObjectId(id.toString()));
 		collection.updateOne(Filters.eq("_id", id), new Document("$set", device_con_status));
+
+
 		Document projection = new Document();
 		projection.append("_id",0).append("Current Status",0);
 		Document device =  collection.find((Bson) filter).projection(exclude("Current Status","_id")).first();
@@ -184,10 +190,10 @@ public class SparkLivingLab {
 			BasicDBObject view= new BasicDBObject() ;
 
 			view.put("Things",collection.find());
+			JSONObject showDev= new JSONObject(view.toJson());
 
 
-
-				return view;
+				return showDev.get("Things");
 		});
 
 		//handle HTTPS GET to path /device
@@ -206,19 +212,17 @@ public class SparkLivingLab {
 		// These are matched in the order they are added.
 		//before("things/:thingId/properties/:propertyName",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		get("things/:thingId/properties/:propertyName", (request, response) -> {
-
+			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
-
-			long idx = Integer.parseInt(index);
-					String propertyName = request.params(":propertyName");
-					response.header("Content-Type", "application/json");
-					JSONObject obj = new JSONObject();
+			int idx = Integer.parseInt(index);
+			response.header("Content-Type", "application/json");
+			DBObject propFilter = new BasicDBObject();
+			propFilter.put( "href", "/"+idx);
 
 					try {
-						JSONArray ver= new JSONArray();
-						ver.put(device_show_status.get("Current Status"));
-
-						return ver;
+						Document show =  collection.find((Bson) propFilter).first();
+						JSONObject showProp= new JSONObject(show.toJson());
+						return null;
 
 					} catch (JSONException e) {
 						return "error a determinar";
@@ -241,9 +245,7 @@ public class SparkLivingLab {
 
 			try {
 				Document show =  collection.find((Bson) propFilter).first();
-				System.out.println("desde things/bathroom_light/properties"+show.toJson());
 				JSONObject showProp= new JSONObject(show.toJson());
-
 
 						return showProp.get("properties");
 				/*
@@ -324,6 +326,7 @@ public class SparkLivingLab {
             }
             ================================================
              */
+			long countDocs=collection.countDocuments();
             DevicesCreator addDev = new DevicesCreator();
             try {
                 JSONObject vars = new JSONObject(request.body()) {
@@ -331,13 +334,14 @@ public class SparkLivingLab {
                 System.out.println(request.body());
 
                 addDev.name=vars.get("Device Name").toString();
-                addDev.devStatus=vars.getBoolean("Initial Status");
+               	addDev.devHref="/"+countDocs;
                 addDev.inputThingType=vars.get("Thing Type").toString();
                 addDev.inputType=vars.get("Input Type").toString();
                 addDev.outputType=vars.get("Output Type").toString();
                 addDev.propertyName=vars.get("Property name").toString();
                 addDev.propType=vars.get("Property Type").toString();
                 addDev.writable=vars.getBoolean("Writable Device");
+                addDev.devSerial=countDocs;
                 Document LLDev = new Document(DevicesCreator.assembleDevice(addDev));
                 collection.insertOne(LLDev);
                 return "Device "+addDev.name+" has been created successfully";

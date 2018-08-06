@@ -36,13 +36,13 @@
         <counts>
           <entry key="dummy" value="6" />
           <entry key="gitignore" value="47" />
-          <entry key="java" value="13257" />
+          <entry key="java" value="13891" />
           <entry key="xml" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="13257" />
+          <entry key="JAVA" value="13891" />
           <entry key="PLAIN_TEXT" value="53" />
           <entry key="XML" value="6" />
         </counts>
@@ -51,14 +51,14 @@
         <counts>
           <entry key="class" value="5" />
           <entry key="gitignore" value="2" />
-          <entry key="java" value="50" />
+          <entry key="java" value="52" />
           <entry key="xml" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="5" />
-          <entry key="JAVA" value="50" />
+          <entry key="JAVA" value="52" />
           <entry key="PLAIN_TEXT" value="2" />
           <entry key="XML" value="2" />
         </counts>
@@ -70,7 +70,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/p4act/Plan4ActConstants.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1254">
+            <state relative-caret-position="330">
               <caret line="59" column="110" selection-start-line="59" selection-start-column="110" selection-end-line="59" selection-end-column="110" />
             </state>
           </provider>
@@ -88,8 +88,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="389">
-              <caret line="120" column="89" selection-start-line="120" selection-start-column="89" selection-end-line="120" selection-end-column="89" />
+            <state relative-caret-position="3013">
+              <caret line="224" column="36" selection-start-line="224" selection-start-column="36" selection-end-line="224" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -100,8 +100,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/DevicesCreator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
+            <state relative-caret-position="96">
+              <caret line="25" column="8" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -246,7 +246,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1533550436999" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1533557535789" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../webthing-java" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
@@ -361,7 +361,7 @@
       <window_info anchor="bottom" id="Messages" order="3" weight="0.32482994" />
       <window_info anchor="bottom" id="Message" order="4" />
       <window_info anchor="bottom" id="Find" order="5" weight="0.3425656" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.38304093" />
+      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.13011695" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -650,9 +650,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-10.0.1/lib/src.zip!/java.base/java/lang/Integer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-191">
+          <caret line="768" column="22" selection-start-line="768" selection-start-column="22" selection-end-line="768" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/p4act/Plan4ActConstants.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1254">
+        <state relative-caret-position="330">
           <caret line="59" column="110" selection-start-line="59" selection-start-column="110" selection-end-line="59" selection-end-column="110" />
         </state>
       </provider>
@@ -664,17 +671,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk-10.0.1/lib/src.zip!/java.base/java/lang/Integer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-191">
-          <caret line="768" column="22" selection-start-line="768" selection-start-column="22" selection-end-line="768" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="120" column="89" selection-start-line="120" selection-start-column="89" selection-end-line="120" selection-end-column="89" />
+        <state relative-caret-position="3013">
+          <caret line="224" column="36" selection-start-line="224" selection-start-column="36" selection-end-line="224" selection-end-column="36" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -683,8 +683,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/DevicesCreator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
+        <state relative-caret-position="96">
+          <caret line="25" column="8" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
