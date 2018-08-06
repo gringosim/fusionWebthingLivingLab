@@ -22,7 +22,7 @@ public class DevicesCreator {
 
 
 
-    public static Document assembleDevice(DevicesCreator gen) {
+    public static Document  assembleDevice(DevicesCreator gen) {
 
         Document LLthing = new Document();
         Document link = new Document("href", devSerial+"/properties/on")
@@ -47,12 +47,12 @@ public class DevicesCreator {
                 .append("name", gen.name)
                 .append("properties",properties)
                 .append("href",gen.devHref )
-                .append("security",security);
+                .append("security",security)
+                .append("Current Status",gen.devStatus);
 
-        return LLthing;
+            return LLthing;
 
     }
-
 
 
 }

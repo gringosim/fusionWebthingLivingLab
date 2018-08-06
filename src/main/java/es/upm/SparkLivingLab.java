@@ -100,17 +100,18 @@ public class SparkLivingLab {
 		newDevice.propType="OnOffState";
 		newDevice.writable=true;
 		newDevice.devSerial=docCount;
-
+		newDevice.devStatus=true;//initial status
 		System.out.println(DevicesCreator.assembleDevice(newDevice));
 		//===============================================================
 
 
 
-		Document device_con_status= new Document(DevicesCreator.assembleDevice(newDevice));
-		//Document device_con_status=new Document();
-		collection.insertOne(device_con_status);
+		Document device= new Document(DevicesCreator.assembleDevice(newDevice));
 
-		ObjectId id = (ObjectId)device_con_status.get( "_id" );
+		//Document device_con_status=new Document();
+		collection.insertOne(device);
+
+		ObjectId id = (ObjectId)device.get( "_id" );
 	/*
 		device_con_status= new Document("@type", new Document("Thing","Switch"));
 		device_con_status.append("name","My .... Lamp");
@@ -136,20 +137,22 @@ public class SparkLivingLab {
 
 */
 
-
+/*
 		DBObject filter = new BasicDBObject();
 		filter.put( "_id", new ObjectId(id.toString()));
 		collection.updateOne(Filters.eq("_id", id), new Document("$set", device_con_status));
 
-
+*/
+		DBObject filter = new BasicDBObject();
+		filter.put( "href", "/"+docCount);
 		Document projection = new Document();
 		projection.append("_id",0).append("Current Status",0);
-		Document device =  collection.find((Bson) filter).projection(exclude("Current Status","_id")).first();
+		Document device_ld =  collection.find((Bson) filter).projection(exclude("Current Status","_id")).first();
 
 		//device.remove("_id");
 		//device.remove("Current Status");
-		System.out.println(device.toJson());
-		System.out.println(id);
+		System.out.println(device_ld.toJson());
+
 
 
 
@@ -222,7 +225,11 @@ public class SparkLivingLab {
 					try {
 						Document show =  collection.find((Bson) propFilter).first();
 						JSONObject showProp= new JSONObject(show.toJson());
-						return null;
+						JSONObject view= new JSONObject();
+						view.put("Status",showProp.get("Current Status"));
+
+
+						return view;
 
 					} catch (JSONException e) {
 						return "error a determinar";
@@ -289,15 +296,22 @@ public class SparkLivingLab {
 					JSONObject obj = new JSONObject();
 					*/
 			response.header("Content-Type", "application/json");
+			String index = request.params(":thingId");
+			int idx = Integer.parseInt(index);
+			//============================================
+			/*
+			JSON format for this request: { "Toggle Status": true/false }
+			 */
 					try {
 					    JSONObject o = new JSONObject(request.body());
-						System.out.println(request.body());
-						JSONArray inputDev = new JSONArray();
-						inputDev.put(o.get("Current Status"));
-						collection.updateOne(Filters.eq("_id", device.get("_id")), new Document("$set", new Document("Current Status",inputDev.toString())));
-                       	Document uDevice=collection.find().first();
+						JSONObject inputDev = new JSONObject();
+						inputDev.put("Current Status",o.get("Toggle Status"));
 
-						return uDevice.toJson();
+						DBObject propFilter = new BasicDBObject();
+						propFilter.put( "href", "/"+idx);
+						collection.updateOne(Filters.eq("href","/"+idx), new Document("$set", new Document("Current Status",inputDev.get("Current Status"))));
+						Document uDevice=collection.find((Bson) propFilter).first();
+						return inputDev;
 
 					} catch (JSONException e) {
 						return "error a determinar";
@@ -342,8 +356,11 @@ public class SparkLivingLab {
                 addDev.propType=vars.get("Property Type").toString();
                 addDev.writable=vars.getBoolean("Writable Device");
                 addDev.devSerial=countDocs;
+                addDev.devStatus=vars.getBoolean("Initial Status");
                 Document LLDev = new Document(DevicesCreator.assembleDevice(addDev));
+
                 collection.insertOne(LLDev);
+
                 return "Device "+addDev.name+" has been created successfully";
 
 
