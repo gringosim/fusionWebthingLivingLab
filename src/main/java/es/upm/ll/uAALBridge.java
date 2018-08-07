@@ -113,8 +113,8 @@ public class uAALBridge {
 
 
     public String encodeURL(String state, String dev){
-
-        String url = "http://138.4.10.224/remote.htm?id="+dev+"&value="+state;
+        String url = "http://192.168.1.144:8181/uAALServices?device="+dev+"&value="+state;
+        //String url = "http://138.4.10.224/remote.htm?id="+dev+"&value="+state;
         if (!connectToRemote){
         	//change url request to uAAL service
         }

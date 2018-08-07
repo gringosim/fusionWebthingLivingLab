@@ -96,13 +96,13 @@ public class SparkLivingLab {
 		newDevice.inputThingType="Switch";
 		newDevice.inputType="boolean";
 		newDevice.outputType="boolean";
-		newDevice.name="Bathroom Lamp";
+		newDevice.name="lights-kitchen";
 		newDevice.propertyName="On";
-		newDevice.propType="OnOffState";
+		newDevice.propType="On/Off";
 		newDevice.writable=true;
 		newDevice.devSerial=docCount;
-		newDevice.devStatus=true;//initial status
-		System.out.println(DevicesCreator.assembleDevice(newDevice));
+		newDevice.devStatus= Boolean.parseBoolean(null);//initial status
+	//	System.out.println(DevicesCreator.assembleDevice(newDevice));
 		//===============================================================
 
 
@@ -111,9 +111,9 @@ public class SparkLivingLab {
 
 		//Document device_con_status=new Document();
 		collection.insertOne(device);
-
+/*
 		ObjectId id = (ObjectId)device.get( "_id" );
-	/*
+
 		device_con_status= new Document("@type", new Document("Thing","Switch"));
 		device_con_status.append("name","My .... Lamp");
 		//device_con_status.append("href","/"+id.toString());
@@ -143,16 +143,16 @@ public class SparkLivingLab {
 		filter.put( "_id", new ObjectId(id.toString()));
 		collection.updateOne(Filters.eq("_id", id), new Document("$set", device_con_status));
 
-*/
+
 		DBObject filter = new BasicDBObject();
 		filter.put( "href", "/"+docCount);
 		Document projection = new Document();
 		projection.append("_id",0).append("Current Status",0);
 		Document device_ld =  collection.find((Bson) filter).projection(exclude("Current Status","_id")).first();
-
+*/
 		//device.remove("_id");
 		//device.remove("Current Status");
-		System.out.println(device_ld.toJson());
+	//	System.out.println(device_ld.toJson());
 
 
 
@@ -166,7 +166,7 @@ public class SparkLivingLab {
 		secure("password.jks", "password", null, null);
 		System.out.println("Secure load certificate from keystore2.jks");
 		//handle HTTPS GET to path /device
-		get("/info", (request, response) -> "Welcome to LivingLab!!!");
+		get("/info", (request, response) -> "Welcome to LivingLab!!! Currently "+docCount+" devices Created.");
 
 		//set JWT authentication for request to the path /device and plan4act authentication type is Bearer expected header Authorization: Bearer <token>
 		/*before("/device",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
@@ -198,7 +198,7 @@ public class SparkLivingLab {
 			view.put("Things",collection.find());
 			JSONObject showDev= new JSONObject(view.toJson());
 			uAALBridge bridgeTouAAL = new uAALBridge();
-			String vadURL = "http://192.168.1.144:8181/uAALServices/Devices";
+			String vadURL = "http://192.168.1.144:8181/uAALServices";
 			return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
 				//return showDev.get("Things");
 		});
@@ -222,7 +222,7 @@ public class SparkLivingLab {
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
-			response.header("Content-Type", "application/json");
+
 			DBObject propFilter = new BasicDBObject();
 			propFilter.put( "href", "/"+idx);
 
@@ -235,8 +235,13 @@ public class SparkLivingLab {
 						//======================================================================
 						//Implementación de Bridge a uAAL
 						uAALBridge bridgeTouAAL = new uAALBridge();
-						String vadURL = "http://192.168.1.144:8181/uAALServices/lights_Kitchen";
-						return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
+						String toggleStatus=null;
+						String vDevice=newDevice.name;
+						if (vDevice.contains("door")){if (toggleStatus!="0"){toggleStatus="1";}}
+						
+							String vadURL = "http://192.168.1.144:8181/uAALServices?device="+vDevice;
+							return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
+
 						//=======================================================================
 
 
@@ -287,7 +292,15 @@ public class SparkLivingLab {
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
-			return null;//things.get(idx);
+			DBObject thingFilter = new BasicDBObject();
+			thingFilter.put( "href", "/"+idx);
+			Document aThing= new Document(collection.find((Bson)thingFilter).first());
+
+			Document projection = new Document();
+			projection.append("_id",0).append("Current Status",0);
+			aThing =  collection.find((Bson) thingFilter).projection(exclude("Current Status","_id")).first();
+			JSONObject showThing= new JSONObject(aThing);
+			return showThing;
 				}
 		);
 
@@ -320,7 +333,15 @@ public class SparkLivingLab {
 						propFilter.put( "href", "/"+idx);
 						collection.updateOne(Filters.eq("href","/"+idx), new Document("$set", new Document("Current Status",inputDev.get("Current Status"))));
 						Document uDevice=collection.find((Bson) propFilter).first();
-						return inputDev;
+					//	return inputDev;
+//=========================================================================================================================================
+						uAALBridge bridgeTouAAL = new uAALBridge();
+						String toggleStatus=inputDev.get("Toggle Status").toString();
+						String vDevice=newDevice.name;
+						if (vDevice.contains("door")){if (toggleStatus!="0"){toggleStatus="1";}}
+
+							//Envío de query(descartar lo anterior para utilizar este bloque
+							return bridgeTouAAL.sendSyncRequestToLL(toggleStatus, vDevice);
 
 					} catch (JSONException e) {
 						return "error a determinar";
