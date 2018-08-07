@@ -96,21 +96,36 @@ public class SparkLivingLab {
 		newDevice.inputThingType="Switch";
 		newDevice.inputType="boolean";
 		newDevice.outputType="boolean";
-		newDevice.name="lights-kitchen";
-		newDevice.propertyName="On";
+		newDevice.name="door_LivingRoom";
+		newDevice.propertyName="On".toLowerCase();
 		newDevice.propType="On/Off";
 		newDevice.writable=true;
 		newDevice.devSerial=docCount;
-		newDevice.devStatus= Boolean.parseBoolean(null);//initial status
+		newDevice.devStatus= true;//initial status
 	//	System.out.println(DevicesCreator.assembleDevice(newDevice));
 		//===============================================================
+		try {
+			if (newDevice.name != "") {
+
+				DBObject compareFilter = new BasicDBObject();
+				compareFilter.put("name", newDevice.name);
+				Document seek = new Document(collection.find((Bson) compareFilter).first());
+				JSONObject seekObj = new JSONObject(seek.toJson());
+
+				if (seekObj.length() != 0) {
+
+					System.out.println(" existe el dispositivo");
+				}
+			}
+		}
+		catch (java.lang.NullPointerException e) {
+			System.out.println("no existe el dispositivo y se ha creado");
+			Document device = new Document(DevicesCreator.assembleDevice(newDevice));
+			collection.insertOne(device);
+			return ;
+		}
 
 
-
-		Document device= new Document(DevicesCreator.assembleDevice(newDevice));
-
-		//Document device_con_status=new Document();
-		collection.insertOne(device);
 /*
 		ObjectId id = (ObjectId)device.get( "_id" );
 
@@ -197,10 +212,14 @@ public class SparkLivingLab {
 
 			view.put("Things",collection.find());
 			JSONObject showDev= new JSONObject(view.toJson());
+			//=====================================================
+			/*
 			uAALBridge bridgeTouAAL = new uAALBridge();
 			String vadURL = "http://192.168.1.144:8181/uAALServices";
 			return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
-				//return showDev.get("Things");
+			*/
+			//======================================================
+				return showDev.get("Things");
 		});
 
 		//handle HTTPS GET to path /device
@@ -226,23 +245,20 @@ public class SparkLivingLab {
 			DBObject propFilter = new BasicDBObject();
 			propFilter.put( "href", "/"+idx);
 
-					try {
-						Document show =  collection.find((Bson) propFilter).first();
-						JSONObject showProp= new JSONObject(show.toJson());
-						JSONObject view= new JSONObject();
-						view.put("Status",showProp.get("Current Status"));
-						//return view;
-						//======================================================================
-						//Implementación de Bridge a uAAL
-						uAALBridge bridgeTouAAL = new uAALBridge();
-						String toggleStatus=null;
-						String vDevice=newDevice.name;
-						if (vDevice.contains("door")){if (toggleStatus!="0"){toggleStatus="1";}}
-						
-							String vadURL = "http://192.168.1.144:8181/uAALServices?device="+vDevice;
-							return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
+			try {
+				Document show =  collection.find((Bson) propFilter).first();
+				JSONObject showProp= new JSONObject(show.toJson());
+				JSONObject view= new JSONObject();
+				view.put("Status",showProp.get("Current Status"));
+				//return view;
+				//======================================================================
+				//Implementación de Bridge a uAAL
+				uAALBridge bridgeTouAAL = new uAALBridge();
+				String vDevice=newDevice.name;
+				String vadURL = "http://192.168.1.144:8181/uAALServices?device="+vDevice;
+				return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
 
-						//=======================================================================
+				//=======================================================================
 
 
 					} catch (JSONException e) {
@@ -320,30 +336,63 @@ public class SparkLivingLab {
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
+
 			//============================================
 			/*
 			JSON format for this request: { "Toggle Status": true/false }
 			 */
-					try {
-					    JSONObject o = new JSONObject(request.body());
-						JSONObject inputDev = new JSONObject();
-						inputDev.put("Current Status",o.get("Toggle Status"));
+			try {
+				JSONObject o = new JSONObject(request.body());
 
-						DBObject propFilter = new BasicDBObject();
-						propFilter.put( "href", "/"+idx);
-						collection.updateOne(Filters.eq("href","/"+idx), new Document("$set", new Document("Current Status",inputDev.get("Current Status"))));
-						Document uDevice=collection.find((Bson) propFilter).first();
-					//	return inputDev;
+
+				JSONObject inputDev = new JSONObject();
+				inputDev.put("Current Status",o.get(newDevice.propertyName.toLowerCase()));
+				DBObject propFilter = new BasicDBObject();
+				propFilter.put( "href", "/"+idx);
+				collection.updateOne(Filters.eq("href","/"+idx), new Document("$set", new Document("Current Status",inputDev.get("Current Status"))));
+				Document uDevice=collection.find((Bson) propFilter).first();
+				
+
+
+
 //=========================================================================================================================================
-						uAALBridge bridgeTouAAL = new uAALBridge();
-						String toggleStatus=inputDev.get("Toggle Status").toString();
-						String vDevice=newDevice.name;
-						if (vDevice.contains("door")){if (toggleStatus!="0"){toggleStatus="1";}}
+				uAALBridge bridgeTouAAL = new uAALBridge();
 
-							//Envío de query(descartar lo anterior para utilizar este bloque
-							return bridgeTouAAL.sendSyncRequestToLL(toggleStatus, vDevice);
+				//AGREGAR IF para consultar por el caso de PUT en el que se escribe mal la propertyName
+				String toggleStatus=o.get(newDevice.propertyName).toString().toLowerCase();
+				if (toggleStatus=="true"){toggleStatus="100";}else{toggleStatus="0";}
+				String vDevice=newDevice.name;
+				if (vDevice.contains("door")){if (toggleStatus!="0"){toggleStatus="1";}}
+				JSONObject reply = new JSONObject(bridgeTouAAL.sendSyncRequestToLL(toggleStatus, vDevice));
 
-					} catch (JSONException e) {
+				System.out.println(reply);
+				if (vDevice.contains("door")){
+					String rep=reply.get(newDevice.name).toString();
+					JSONObject resp=new JSONObject();
+					resp.put(newDevice.name,rep);
+					return resp;
+				}
+				else {String rep;
+					if (reply.getString(newDevice.name) != "0") {
+
+						rep = "true";
+					} else {
+						rep = "false";
+					}
+					JSONObject resp = new JSONObject();
+					resp.put(newDevice.name, rep);
+
+
+				/*
+
+				JSONObject rep=new JSONObject();
+				rep.put(newDevice.propertyName,inpValue);*/
+					return resp;
+				}
+
+
+
+			} catch (JSONException e) {
 						return "error a determinar";
 					}
 
