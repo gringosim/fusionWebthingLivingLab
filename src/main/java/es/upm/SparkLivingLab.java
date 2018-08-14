@@ -96,13 +96,13 @@ public class SparkLivingLab {
 		newDevice.inputThingType="Switch";
 		newDevice.inputType="boolean";
 		newDevice.outputType="boolean";
-		newDevice.name="door_LivingRoom";
-		newDevice.propertyName="On".toLowerCase();
+		newDevice.name="door_BathRoom";
+		newDevice.propertyName="on";
 		newDevice.propType="On/Off";
 		newDevice.writable=true;
 		newDevice.devSerial=docCount;
 		newDevice.devStatus= true;//initial status
-	//	System.out.println(DevicesCreator.assembleDevice(newDevice));
+
 		//===============================================================
 		try {
 			if (newDevice.name != "") {
@@ -124,53 +124,6 @@ public class SparkLivingLab {
 			collection.insertOne(device);
 			return ;
 		}
-
-
-/*
-		ObjectId id = (ObjectId)device.get( "_id" );
-
-		device_con_status= new Document("@type", new Document("Thing","Switch"));
-		device_con_status.append("name","My .... Lamp");
-		//device_con_status.append("href","/"+id.toString());
-		device_con_status.append("href","/"+devSerial);
-		device_con_status.append("@context",Arrays.asList("http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
-				"http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
-				"http://iot.schema.org"));
-		Document link= new Document();
-		link.append("href","/"+devSerial+"/properties/on").append("mediaType","application/json");
-		//link.append("href","/"+id.toString()+"/properties/on").append("mediaType","application/json");
-		device_con_status.append("properties",new Document("on", new Document("name", "B")
-														.append("outputType",new Document("type","boolean"))
-														.append("inputType",new Document("type","boolean"))
-				   										.append("link",link)
-														.append("@type",Arrays.asList( "Property",
-																"Light", "OnOffState"))
-														.append("writable",false)
-													)
-		);
-		device_con_status.append("Current Status",null);
-
-
-*/
-
-/*
-		DBObject filter = new BasicDBObject();
-		filter.put( "_id", new ObjectId(id.toString()));
-		collection.updateOne(Filters.eq("_id", id), new Document("$set", device_con_status));
-
-
-		DBObject filter = new BasicDBObject();
-		filter.put( "href", "/"+docCount);
-		Document projection = new Document();
-		projection.append("_id",0).append("Current Status",0);
-		Document device_ld =  collection.find((Bson) filter).projection(exclude("Current Status","_id")).first();
-*/
-		//device.remove("_id");
-		//device.remove("Current Status");
-	//	System.out.println(device_ld.toJson());
-
-
-
 
 
 		System.out.println("Current dir: " + System.getProperty("user.dir"));
@@ -248,15 +201,19 @@ public class SparkLivingLab {
 			try {
 				Document show =  collection.find((Bson) propFilter).first();
 				JSONObject showProp= new JSONObject(show.toJson());
+				String alias = showProp.get("name").toString();
 				JSONObject view= new JSONObject();
-				view.put("Status",showProp.get("Current Status"));
+				//view.put("Status",showProp.get("Current Status"));
 				//return view;
 				//======================================================================
 				//Implementación de Bridge a uAAL
+
 				uAALBridge bridgeTouAAL = new uAALBridge();
-				String vDevice=newDevice.name;
+				String vDevice=alias;
 				String vadURL = "http://192.168.1.144:8181/uAALServices?device="+vDevice;
+				view.put(alias,bridgeTouAAL.sendSyncRedirectToLL(vadURL));
 				return bridgeTouAAL.sendSyncRedirectToLL(vadURL);
+
 
 				//=======================================================================
 
@@ -280,21 +237,14 @@ public class SparkLivingLab {
 			DBObject propFilter = new BasicDBObject();
 			propFilter.put( "href", "/"+idx);
 
+
 			try {
 				Document show =  collection.find((Bson) propFilter).first();
 				JSONObject showProp= new JSONObject(show.toJson());
 
+
 						return showProp.get("properties");
-				/*
-				Thing cosa = things_obj.get(idx);
-				JSONObject obj = new JSONObject();
-				return obj.put("properties",cosa.getPropertyDescriptions());
-				*/
-				//===========================================================
-				//método alternativo
-				// JSONObject propiedad_de_la_cosa = ((JSONObject) things.get(idx)).getJSONObject("properties");
-				// obj.put("properties",propiedad_de_la_cosa);
-				//	return obj;
+
 			} catch (JSONException e) {
 				return "error a determinar";
 			}
@@ -324,20 +274,11 @@ public class SparkLivingLab {
 
 
 		put("things/:thingId/properties/:propertyName", (request, response) -> {
-			/*
-			JSONObject obj_value = new JSONObject(request.body());
-					System.out.println(request.body());
-					String index = request.params(":thingId");
-					int idx = Integer.parseInt(index);
-					String propertyName = request.params(":propertyName");
-					response.header("Content-Type", "application/json");
-					JSONObject obj = new JSONObject();
-					*/
+
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
 
-			//============================================
 			/*
 			JSON format for this request: { "Toggle Status": true/false }
 			 */
@@ -351,7 +292,11 @@ public class SparkLivingLab {
 				propFilter.put( "href", "/"+idx);
 				collection.updateOne(Filters.eq("href","/"+idx), new Document("$set", new Document("Current Status",inputDev.get("Current Status"))));
 				Document uDevice=collection.find((Bson) propFilter).first();
-				
+				JSONObject alias_obj =new JSONObject(uDevice.toJson());
+				String alias = alias_obj.get("name").toString();
+
+
+
 
 
 
@@ -361,7 +306,7 @@ public class SparkLivingLab {
 				//AGREGAR IF para consultar por el caso de PUT en el que se escribe mal la propertyName
 				String toggleStatus=o.get(newDevice.propertyName).toString().toLowerCase();
 				if (toggleStatus=="true"){toggleStatus="100";}else{toggleStatus="0";}
-				String vDevice=newDevice.name;
+				String vDevice=alias;
 				if (vDevice.contains("door")){if (toggleStatus!="0"){toggleStatus="1";}}
 				JSONObject reply = new JSONObject(bridgeTouAAL.sendSyncRequestToLL(toggleStatus, vDevice));
 
@@ -369,7 +314,7 @@ public class SparkLivingLab {
 				if (vDevice.contains("door")){
 					String rep=reply.get(newDevice.name).toString();
 					JSONObject resp=new JSONObject();
-					resp.put(newDevice.name,rep);
+					resp.put(alias,rep);
 					return resp;
 				}
 				else {String rep;
@@ -380,7 +325,7 @@ public class SparkLivingLab {
 						rep = "false";
 					}
 					JSONObject resp = new JSONObject();
-					resp.put(newDevice.name, rep);
+					resp.put(alias, rep);
 
 
 				/*
