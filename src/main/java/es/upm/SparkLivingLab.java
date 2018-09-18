@@ -94,10 +94,10 @@ public class SparkLivingLab {
 		//==========================================================
 		DevicesCreator newDevice = new DevicesCreator();
 		newDevice.devHref="/"+docCount;
-		newDevice.inputThingType="Switch";
-		newDevice.inputType="boolean";
-		newDevice.outputType="boolean";
-		newDevice.name="light01";
+		newDevice.inputThingType="Door";
+		newDevice.inputType="integer";
+		newDevice.outputType="integer";
+		newDevice.name="";
 		newDevice.propertyName="on";
 		newDevice.propType="On/Off";
 		newDevice.writable=true;
@@ -131,16 +131,19 @@ public class SparkLivingLab {
 		//=====================================================
 
 		uAALBridge getDevices = new uAALBridge();
-		String vURL = "http://192.168.1.102:8181/uAALServices?devices";
-		String allDevices ="lights_ControlRoom,lightDetector_BedRoom,lightDetector_BathRoom,presenceSensor_BedRoom,blind_Kitchen,presenceSensor_Entrance,presenceSensor_DiningRoom,lights_Porch,door_Kitchen,door_LivingRoom,lights_VirtualRealityRoom,lights_DiningRoom,blind_ControlRoom,lights_DiningRoomexterior,electrovalve,aerator,door_BathRoom,lights_BathRoom,lights_ControlRoomExterior,smokeSensor_Kitchen,blind_UserArea,blind_DiningRoom,fountain,magneticContact_BathRoom,blind_BedRoom,light09,lights_DishwasherRefrigerator,light08,thermometer,light03,light02,light01,waterfall,blind_KitchenLeft,lightDetector_Kitchen,lights_BedRoom,light07,light06,light05,light04,light10,emergencyButton,presenceSensor_Kitchen,lights_TVRoom,presenceSensor_BathRoom,blind_KitchenRight,light14,light13,light12,light11,light15,door_Entrance,temperatureLevelSensor_Kitchen,lights_Kitchen,magneticContact_BedRoom,lights_UserArea,lights_OvenWindow,lightDetector_DiningRoom,lightDetector_Entrance,blind_Entrance,lights_DiningRoominterior,lights_Street";//getDevices.sendSyncRedirectToLL(vURL);
+		String vURL = "http://192.168.1.130:8181/uAALServices?devices";
+		String allDevices =getDevices.sendSyncRedirectToLL(vURL);
 		System.out.println(allDevices);
 		ArrayList<String> allDevicesArray= new ArrayList<>();
 		String parts[]=allDevices.split(",");
 		int i=0;
+		Hashtable devicesTable = new Hashtable();
 		for (String val: parts){
-			allDevicesArray.add(val);
+			allDevicesArray.add(val);//recibe todos los dispositivos disponibles
+			devicesTable.put(i,val);// crea la tabla de correspondencias entre nombres y id de cada dispositivo.
+			i=i+1;
 			 }
-
+			System.out.println(devicesTable);
 		//======================================================
 
 
@@ -152,13 +155,11 @@ public class SparkLivingLab {
 
 		//set JWT authentication for request to the path /device and plan4act authentication type is Bearer expected header Authorization: Bearer <token>
 		before("/device",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
+
 		before("/plan4act",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-		System.out.println("Adding JWTAuthenticationFilter to device and plan4act path");
+
 		//set JWT authentication for request to the path /analizetext
 		before("/analizetext",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-		System.out.println("Adding JWTAuthenticationFilter to analizetext path");
-
-
 
 		//manage authentication and generates token for valid users
 		//example : post {"username":"eugenio","password":"gaeta"} it create a token for the authentication
@@ -219,7 +220,7 @@ public class SparkLivingLab {
 
 				uAALBridge bridgeTouAAL = new uAALBridge();
 				String vDevice=alias;
-				String vadURL = "http://192.168.1.102:8181/uAALServices?device="+vDevice;
+				String vadURL = "http://192.168.1.130:8181/uAALServices?device="+vDevice;
 				JSONObject getSt = new JSONObject(bridgeTouAAL.sendSyncRedirectToLL(vadURL));
 				System.out.println(getSt);
 				view.put("on",getSt.get(alias));// esta línea debería devolver el estado de la propiedad del dispositivo de acuerdo a WoT Mozilla
@@ -324,9 +325,10 @@ public class SparkLivingLab {
 
 				System.out.println(reply);
 				if (vDevice.contains("door")){
-					String rep=reply.get(newDevice.name).toString();
+					String rep=reply.get(newDevice.name).toString();//COLOCAR ALIAS SEGURAMENTE SALE DE LA BASE DE DATOS!!!!!!!!
 					JSONObject resp=new JSONObject();
 					resp.put(alias,rep);
+					System.out.println(resp);
 					return resp;
 				}
 				else {String rep=reply.getString(newDevice.name);
@@ -344,6 +346,7 @@ public class SparkLivingLab {
 
 				JSONObject rep=new JSONObject();
 				rep.put(newDevice.propertyName,inpValue);*/
+					System.out.println(resp);
 					return resp;
 				}
 
@@ -359,6 +362,8 @@ public class SparkLivingLab {
 
 
 		);
+
+
 		before("things/add",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 
 		put("things/add", (request, response) -> {
@@ -405,6 +410,12 @@ public class SparkLivingLab {
             } catch (JSONException e) {
                 return "Unable to create the Device";
             }
-        });
+        }
+
+
+        )
+
+
+		;
 	}
 }
