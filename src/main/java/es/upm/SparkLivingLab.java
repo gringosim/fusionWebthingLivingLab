@@ -5,7 +5,6 @@ import static spark.Spark.post;
 import static spark.Spark.put;
 import static spark.Spark.port;
 import static spark.Spark.secure;
-
 import es.upm.ll.uAALBridge;
 import org.bson.BSONObject;
 import org.bson.types.ObjectId;
@@ -17,19 +16,14 @@ import com.mongodb.client.model.Filters;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import com.mongodb.client.model.Sorts;
-
 import java.math.BigInteger;
 import java.sql.Array;
 import java.util.Arrays;
 import com.mongodb.DBObject;
-
 import org.bson.Document;
 import com.qmetric.spark.authentication.AuthenticationDetails;
-
 import es.upm.auth.JWTAuthenticationFilter;
-
 import es.upm.interfaces.UserUtils;
-
 import es.upm.ll.regex.TextRecognizer;
 import es.upm.p4act.Plan4ActConstants;
 import org.bson.conversions.Bson;
@@ -38,73 +32,51 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.mozilla.iot.webthing.Property;
-import org.mozilla.iot.webthing.Thing;
-import org.mozilla.iot.webthing.Value;
-import org.mozilla.iot.webthing.example.MultipleThings;
-
 import java.util.*;
-
 import com.mongodb.DBCursor;
 import com.mongodb.MongoClientURI;
 import com.mongodb.ServerAddress;
-
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
 import org.bson.types.ObjectId;
 import org.bson.Document;
 import java.util.Arrays;
 import com.mongodb.Block;
-
 import static com.mongodb.client.model.Filters.*;
 import com.mongodb.client.result.DeleteResult;
 import static com.mongodb.client.model.Updates.*;
-//import static sun.plugin2.util.PojoUtil.toJson;
-
+import static sun.plugin2.util.PojoUtil.toJson;
 import com.mongodb.client.result.UpdateResult;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SparkLivingLab {
 
-
-
 	public static boolean up = true;
 	private static UserUtils userUtils;
-
 	public static void setUserUtils(Object service) {
 		userUtils = (UserUtils) service;
 	}
 
-
-
 	public static void main(String[] args) {
-
-
-
-
-
 		//initializing DataBase
-
 		MongoClient mongoClient = new MongoClient();
 		MongoDatabase database = mongoClient.getDatabase("ThingsDataBase");
 		MongoCollection<Document> collection = database.getCollection("Devices");
-
 		long docCount=collection.countDocuments();
-		//==========================================================
-		DevicesCreator newDevice = new DevicesCreator();
-		newDevice.devHref="/"+docCount;
-		newDevice.inputThingType="Door";
-		newDevice.inputType="integer";
-		newDevice.outputType="integer";
+		//=======================================================================================================
+		//=======================================================================================================
+		DevicesCreator newDevice = new DevicesCreator();			//This block is temporary and
+		newDevice.devHref="/"+docCount;								//its only purpose is to build devices
+		newDevice.inputThingType="Door";							//for test. Once W3C standard is released
+		newDevice.inputType="integer";								//it must be removed and implemented in uAAL
+		newDevice.outputType="integer";								//
 		newDevice.name="";
 		newDevice.propertyName="on";
 		newDevice.propType="On/Off";
 		newDevice.writable=true;
 		newDevice.devSerial=docCount;
 		newDevice.devStatus= true;//initial status
-
-		//===============================================================
 		try {
 			if (newDevice.name != "") {
 
@@ -125,14 +97,14 @@ public class SparkLivingLab {
 			collection.insertOne(device);
 			return ;
 		}
-
-
+//======================================================================================================
+//======================================================================================================
 		System.out.println("Current dir: " + System.getProperty("user.dir"));
 		//=====================================================
-
+		//SECUENCIA TEMPORAL PARA CREAR LISTADO DE DISPOSITIVOS
 		uAALBridge getDevices = new uAALBridge();
-		String vURL = "http://192.168.1.130:8181/uAALServices?devices";
-		String allDevices =getDevices.sendSyncRedirectToLL(vURL);
+		String vURL = "http://192.168.1.130:8181/uAALServices";//Only to ask uAAL server for list of devices (Temporary)
+		String allDevices =getDevices.sendSyncRedirectToLL(vURL+"?devices");
 		System.out.println(allDevices);
 		ArrayList<String> allDevicesArray= new ArrayList<>();
 		String parts[]=allDevices.split(",");
@@ -145,47 +117,34 @@ public class SparkLivingLab {
 			 }
 			System.out.println(devicesTable);
 		//======================================================
-
-
 		//set https connection
 		secure("password.jks", "password", null, null);
 		System.out.println("Secure load certificate from keystore2.jks");
 		//handle HTTPS GET to path /device
 		get("/info", (request, response) -> "Welcome to LivingLab!!! Currently "+docCount+" devices Created.");
-
 		//set JWT authentication for request to the path /device and plan4act authentication type is Bearer expected header Authorization: Bearer <token>
 		before("/device",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-
 		before("/plan4act",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-
 		//set JWT authentication for request to the path /analizetext
-		before("/analizetext",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-
 		//manage authentication and generates token for valid users
 		//example : post {"username":"eugenio","password":"gaeta"} it create a token for the authentication
 		post("/auth", (request, response) -> {
 			return AuthManager.handleRequest(request, response, userUtils);
 		});
 
-
 		before("/things",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		get("/things", (request, response) -> {
 			//return DeviceManager.handleRequest(request, response);
 			response.header("Content-Type", "application/json");
-
 			System.out.println(allDevicesArray);
-
-
 			BasicDBObject view= new BasicDBObject() ;
 			view.put("Things",collection.find());
 			JSONObject showDev= new JSONObject(view.toJson());
-
-				return showDev.get("Things");
-
-
+			return showDev.get("Things");
 		});
 
 		//handle HTTPS GET to path /device
+		before("/analizetext",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		get("/analizetext", (request, response) -> {
 					response.header("Content-Type", "application/json");
 					response.header("Access-Control-Allow-Origin", "*");
@@ -204,43 +163,28 @@ public class SparkLivingLab {
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
-
 			DBObject propFilter = new BasicDBObject();
 			propFilter.put( "href", "/"+idx);
-
 			try {
 				Document show =  collection.find((Bson) propFilter).first();
 				JSONObject showProp= new JSONObject(show.toJson());
 				String alias = showProp.get("name").toString();
 				JSONObject view= new JSONObject();
-				//view.put("Status",showProp.get("Current Status"));
-				//return view;
 				//======================================================================
 				//Implementación de Bridge a uAAL
-
 				uAALBridge bridgeTouAAL = new uAALBridge();
 				String vDevice=alias;
 				String vadURL = "http://192.168.1.130:8181/uAALServices?device="+vDevice;
 				JSONObject getSt = new JSONObject(bridgeTouAAL.sendSyncRedirectToLL(vadURL));
 				System.out.println(getSt);
 				view.put("on",getSt.get(alias));// esta línea debería devolver el estado de la propiedad del dispositivo de acuerdo a WoT Mozilla
-
 				return view;
-
-
 				//=======================================================================
-
-
-					} catch (JSONException e) {
-						return "error a determinar";
-					}
-
-
-
+			}catch (JSONException e) {
+				return "Error en la interpretación del formato de respuesta de uAAL";
+						}
 				}
 		);
-
-
 
 		before("/:thingId/properties",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		get("things/:thingId/properties", (request, response) -> {
@@ -250,22 +194,18 @@ public class SparkLivingLab {
 			DBObject propFilter = new BasicDBObject();
 			propFilter.put( "href", "/"+idx);
 
-
 			try {
 				Document show =  collection.find((Bson) propFilter).first();
 				JSONObject showProp= new JSONObject(show.toJson());
-
-
-						return showProp.get("properties");
-
-			} catch (JSONException e) {
-				return "error a determinar";
-			}
-
-
+				return showProp.get("properties");
 				}
 
+			catch (JSONException e) {
+				return "error a determinar";
+				}
+			}
 		);
+
 		before("/things/:thingId",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
 		get("/things/:thingId", (request, response) -> {
 			response.header("Content-Type", "application/json");
@@ -287,18 +227,14 @@ public class SparkLivingLab {
 
 
 		put("things/:thingId/properties/:propertyName", (request, response) -> {
-
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
 			int idx = Integer.parseInt(index);
-
 			/*
-			JSON format for this request: { "Toggle Status": true/false }
+			JSON format for this request: { "on": true/false }
 			 */
 			try {
 				JSONObject o = new JSONObject(request.body());
-
-
 				JSONObject inputDev = new JSONObject();
 				inputDev.put("Current Status",o.get(newDevice.propertyName.toLowerCase()));
 				DBObject propFilter = new BasicDBObject();
@@ -307,22 +243,13 @@ public class SparkLivingLab {
 				Document uDevice=collection.find((Bson) propFilter).first();
 				JSONObject alias_obj =new JSONObject(uDevice.toJson());
 				String alias = alias_obj.get("name").toString();
-
-
-
-
-
-
 //=========================================================================================================================================
 				uAALBridge bridgeTouAAL = new uAALBridge();
-
-				//AGREGAR IF para consultar por el caso de PUT en el que se escribe mal la propertyName
 				String toggleStatus=o.get(newDevice.propertyName).toString().toLowerCase();
 				if (toggleStatus=="true"){toggleStatus="100";}else{toggleStatus="0";}
 				String vDevice=alias;
 				if (vDevice.contains("door")){if (toggleStatus!="0"){toggleStatus="1";}}
 				JSONObject reply = new JSONObject(bridgeTouAAL.sendSyncRequestToLL(toggleStatus, vDevice));
-
 				System.out.println(reply);
 				if (vDevice.contains("door")){
 					String rep=reply.get(newDevice.name).toString();//COLOCAR ALIAS SEGURAMENTE SALE DE LA BASE DE DATOS!!!!!!!!
@@ -332,40 +259,20 @@ public class SparkLivingLab {
 					return resp;
 				}
 				else {String rep=reply.getString(newDevice.name);
-					/*if (reply.getString(newDevice.name) == "0") {
-
-						rep = "false";
-					} else {
-						rep = "true";
-					}*/
 					JSONObject resp = new JSONObject();
 					resp.put(alias, rep);
-							// DEBE CORREGIRSE LO QUE SE MUESTRA COMO RESPONSE para que sea consistente con WOT
-
-				/*
-
-				JSONObject rep=new JSONObject();
-				rep.put(newDevice.propertyName,inpValue);*/
 					System.out.println(resp);
 					return resp;
 				}
 
-
-
 			} catch (JSONException e) {
 						return "error a determinar";
 					}
-
-
-
 				}
-
-
 		);
 
 
 		before("things/add",new JWTAuthenticationFilter("/*", new AuthenticationDetails("", "")));
-
 		put("things/add", (request, response) -> {
             /*
             ---------------------------
@@ -413,9 +320,6 @@ public class SparkLivingLab {
         }
 
 
-        )
-
-
-		;
+        );
 	}
 }

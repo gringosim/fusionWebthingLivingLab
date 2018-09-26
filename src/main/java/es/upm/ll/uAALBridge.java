@@ -1,5 +1,7 @@
 package es.upm.ll;
 
+import es.upm.SparkLivingLab;
+
 import javax.swing.*;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -114,7 +116,6 @@ public class uAALBridge {
 
     public String encodeURL(String state, String dev){
         String url = "http://192.168.1.130:8181/uAALServices?device="+dev+"&value="+state;
-        System.out.println("La URL para Vadym es http://192.168.1.130:8181/uAALServices?device="+dev+"&value="+state);
         //String url = "http://138.4.10.224/remote.htm?id="+dev+"&value="+state;
         if (!connectToRemote){
         	//change url request to uAAL service
