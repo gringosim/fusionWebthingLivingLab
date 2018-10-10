@@ -5,6 +5,9 @@ import static spark.Spark.post;
 import static spark.Spark.put;
 import static spark.Spark.port;
 import static spark.Spark.secure;
+
+import es.upm.ll.LlBridge;
+import es.upm.ll.ServiceInterface;
 import es.upm.ll.uAALBridge;
 import org.bson.BSONObject;
 import org.bson.types.ObjectId;
@@ -45,7 +48,7 @@ import com.mongodb.Block;
 import static com.mongodb.client.model.Filters.*;
 import com.mongodb.client.result.DeleteResult;
 import static com.mongodb.client.model.Updates.*;
-import static sun.plugin2.util.PojoUtil.toJson;
+
 import com.mongodb.client.result.UpdateResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +62,9 @@ public class SparkLivingLab {
 	}
 
 	public static void main(String[] args) {
+		LlBridge newInstance = new LlBridge();
 		//initializing DataBase
-		MongoClient mongoClient = new MongoClient();
+		MongoClient mongoClient = new MongoClient(newInstance.generateDbDomain());
 		MongoDatabase database = mongoClient.getDatabase("ThingsDataBase");
 		MongoCollection<Document> collection = database.getCollection("Devices");
 		long docCount=collection.countDocuments();
@@ -71,7 +75,7 @@ public class SparkLivingLab {
 		newDevice.inputThingType="Door";							//for test. Once W3C standard is released
 		newDevice.inputType="integer";								//it must be removed and implemented in uAAL
 		newDevice.outputType="integer";								//
-		newDevice.name="";
+		newDevice.name="lab_light";
 		newDevice.propertyName="on";
 		newDevice.propType="On/Off";
 		newDevice.writable=true;
@@ -103,7 +107,9 @@ public class SparkLivingLab {
 		//=====================================================
 		//SECUENCIA TEMPORAL PARA CREAR LISTADO DE DISPOSITIVOS
 		uAALBridge getDevices = new uAALBridge();
-		String vURL = "http://192.168.1.130:8181/uAALServices";//Only to ask uAAL server for list of devices (Temporary)
+
+		String vURL = newInstance.generateDomain()+"/"+newInstance.defineService();
+		//String vURL = "http://192.168.1.130:8181/uAALServices";//Only to ask uAAL server for list of devices (Temporary)
 		String allDevices =getDevices.sendSyncRedirectToLL(vURL+"?devices");
 		System.out.println(allDevices);
 		ArrayList<String> allDevicesArray= new ArrayList<>();
