@@ -6,6 +6,7 @@ import static spark.Spark.put;
 import static spark.Spark.port;
 import static spark.Spark.secure;
 
+import es.upm.ll.ContextDefinition;
 import es.upm.ll.LlBridge;
 import es.upm.ll.ServiceInterface;
 import es.upm.ll.uAALBridge;
@@ -62,7 +63,7 @@ public class SparkLivingLab {
 	}
 
 	public static void main(String[] args) {
-		LlBridge newInstance = new LlBridge();
+		ContextDefinition newInstance = new ContextDefinition();
 		//initializing DataBase
 		MongoClient mongoClient = new MongoClient(newInstance.generateDbDomain());
 		MongoDatabase database = mongoClient.getDatabase("ThingsDataBase");

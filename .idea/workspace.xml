@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ff7a81e4-be01-49c0-aba1-01136b22fce9" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/es/upm/ll/ServiceInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/es/upm/ll/ContextDefinition.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/es/upm/ll/LlBridge.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/es/upm/ll/LlBridge.java" afterDir="false" />
@@ -46,13 +46,13 @@
         <counts>
           <entry key="dummy" value="6" />
           <entry key="gitignore" value="47" />
-          <entry key="java" value="22084" />
+          <entry key="java" value="22130" />
           <entry key="xml" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="22084" />
+          <entry key="JAVA" value="22130" />
           <entry key="PLAIN_TEXT" value="53" />
           <entry key="XML" value="6" />
         </counts>
@@ -61,14 +61,14 @@
         <counts>
           <entry key="class" value="5" />
           <entry key="gitignore" value="2" />
-          <entry key="java" value="68" />
+          <entry key="java" value="69" />
           <entry key="xml" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="5" />
-          <entry key="JAVA" value="68" />
+          <entry key="JAVA" value="69" />
           <entry key="PLAIN_TEXT" value="2" />
           <entry key="XML" value="3" />
         </counts>
@@ -86,14 +86,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="76" column="44" lean-forward="true" selection-start-line="76" selection-start-column="44" selection-end-line="76" selection-end-column="44" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="198">
+              <caret line="9" selection-start-line="9" selection-end-line="9" />
             </state>
           </provider>
         </entry>
@@ -116,11 +113,26 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/ll/LlBridge.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="682">
-              <caret line="31" column="29" lean-forward="true" selection-start-line="31" selection-start-column="29" selection-end-line="31" selection-end-column="29" />
+            <state relative-caret-position="6336">
+              <caret line="288" column="3" selection-start-line="288" selection-start-column="3" selection-end-line="288" selection-end-column="3" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#2359#2375#0" expanded="true" />
+                <element signature="e#5361#5362#0" expanded="true" />
+                <element signature="e#5408#5409#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/ll/ContextDefinition.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="594">
+              <caret line="27" column="6" lean-forward="true" selection-start-line="27" selection-start-column="6" selection-end-line="27" selection-end-column="6" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -178,6 +190,7 @@
         <option value="$PROJECT_DIR$/src/main/java/es/upm/ll/uAALLlBridge.java" />
         <option value="$PROJECT_DIR$/src/main/java/es/upm/ll/uAALBridge.java" />
         <option value="$PROJECT_DIR$/src/main/java/es/upm/ll/ServiceInterface.java" />
+        <option value="$PROJECT_DIR$/src/main/java/es/upm/ll/ContextDefinition.java" />
         <option value="$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java" />
         <option value="$PROJECT_DIR$/src/main/java/es/upm/ll/LlBridge.java" />
       </list>
@@ -253,7 +266,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539162575606" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539164341949" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../webthing-java" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
@@ -680,10 +693,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/ll/LlBridge.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/ll/ContextDefinition.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="682">
-          <caret line="31" column="29" lean-forward="true" selection-start-line="31" selection-start-column="29" selection-end-line="31" selection-end-column="29" />
+        <state relative-caret-position="594">
+          <caret line="27" column="6" lean-forward="true" selection-start-line="27" selection-start-column="6" selection-end-line="27" selection-end-column="6" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -692,10 +705,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/SparkLivingLab.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="76" column="44" lean-forward="true" selection-start-line="76" selection-start-column="44" selection-end-line="76" selection-end-column="44" />
+        <state relative-caret-position="198">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/es/upm/ll/LlBridge.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6336">
+          <caret line="288" column="3" selection-start-line="288" selection-start-column="3" selection-end-line="288" selection-end-column="3" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#2359#2375#0" expanded="true" />
+            <element signature="e#5361#5362#0" expanded="true" />
+            <element signature="e#5408#5409#0" expanded="true" />
           </folding>
         </state>
       </provider>
