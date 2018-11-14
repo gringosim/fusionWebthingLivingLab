@@ -17,6 +17,7 @@ public class DevicesCreator {
     public static String inputType;
     public static String outputType;
     public static String devHref;
+    public static String serverChoice;//verificar si cumple con JSONLD
    public static long devSerial;
    public static boolean devStatus;
 
@@ -31,7 +32,8 @@ public class DevicesCreator {
                             .append("inputType", new Document("type", gen.inputType))
                             .append("outputType", new Document("type", gen.outputType))
                             .append("writable", gen.writable)
-                            .append("link", Arrays.asList(link));
+                            .append("link", Arrays.asList(link))
+                            .append("Server: ",gen.serverChoice);// verificar si cumple con JSON LD
         Document properties = new Document(gen.propertyName, property);
 
         Document security = new Document( new Document(new Document("authorizationUrl", "https://mythingserver.org/auth")

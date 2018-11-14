@@ -19,7 +19,7 @@ import javax.swing.SwingWorker;
 
 public class ContextDefinition implements ServiceInterface {
     public String generateDomain(){
-        String serviceDomain = ""; //Define service domain (HTTPS)
+        String serviceDomain = "http://192.168.1.130:8181"; //Define service domain (HTTPS)
         return serviceDomain;
     };
     public String defineService(){
@@ -31,7 +31,7 @@ public class ContextDefinition implements ServiceInterface {
         return value;
     };
     public String generateDbDomain(){
-        String dbHost = "192.168.1.168";
+        String dbHost = "";
         return dbHost;
     };
 }

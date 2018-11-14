@@ -13,8 +13,8 @@ public class AuthManager {
 		if(userUtils != null ){
 			if(userUtils.checkUser(user.username, user.password)){
 				user = new User();
-				user.username = "eugenio";
-			    user.password = "gaeta";			
+				user.username = "plan4act";
+			    user.password = "proactive";
 			}
 		}
 		}catch(Exception e) {
