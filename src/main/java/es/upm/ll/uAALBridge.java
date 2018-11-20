@@ -115,7 +115,7 @@ public class uAALBridge {
 
 
     public String encodeURL(String state, String dev){
-        String url = "http://192.168.1.130:8181/uAALServices?device="+dev+"&value="+state;
+        String url = "http://192.168.1.68:8081/uAALServices?device="+dev+"&value="+state;
         //String url = "http://138.4.10.224/remote.htm?id="+dev+"&value="+state;
         if (!connectToRemote){
         	//change url request to uAAL service
@@ -183,6 +183,7 @@ public class uAALBridge {
             // Convert the InputStream into a string
             //String contentAsString = readIt(is, len);
             String contentAsString = readUTF8Text(is);
+            System.out.println(contentAsString);
             return contentAsString;
 
             // Makes sure that the InputStream is closed after the app is

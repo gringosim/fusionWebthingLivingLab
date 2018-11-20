@@ -21,7 +21,8 @@ public class AuthManager {
 		 System.out.println("Remote loggin is not available");
 		 
 		}
-		try {		return JWTAuthHandler.getTokenForUser(user);
+		try {
+			return JWTAuthHandler.getTokenForUser(user);
 		
 		}catch(Exception e) {
 			return JWTAuthHandler.getGenericErrorMessage();

@@ -6,51 +6,23 @@ import static spark.Spark.put;
 import static spark.Spark.port;
 import static spark.Spark.secure;
 
-import es.upm.ll.ContextDefinition;
-import es.upm.ll.LlBridge;
-import es.upm.ll.ServiceInterface;
-import es.upm.ll.uAALBridge;
-import org.bson.BSONObject;
-import org.bson.types.ObjectId;
-import com.mongodb.*;
-import com.mongodb.MongoClient;
-import com.mongodb.client.*;
-import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Filters;
-import static com.mongodb.client.model.Filters.*;
+import es.upm.ll.uAALBridge;
+import com.mongodb.*;
+
 import static com.mongodb.client.model.Projections.*;
-import com.mongodb.client.model.Sorts;
-import java.math.BigInteger;
-import java.sql.Array;
-import java.util.Arrays;
+
 import com.mongodb.DBObject;
 import org.bson.Document;
 import com.qmetric.spark.authentication.AuthenticationDetails;
 import es.upm.auth.JWTAuthenticationFilter;
 import es.upm.interfaces.UserUtils;
 import es.upm.ll.regex.TextRecognizer;
-import es.upm.p4act.Plan4ActConstants;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONString;
-import java.util.*;
-import com.mongodb.DBCursor;
-import com.mongodb.MongoClientURI;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoCollection;
-import org.bson.types.ObjectId;
-import org.bson.Document;
-import java.util.Arrays;
-import com.mongodb.Block;
-import static com.mongodb.client.model.Filters.*;
-import com.mongodb.client.result.DeleteResult;
-import static com.mongodb.client.model.Updates.*;
 
-import com.mongodb.client.result.UpdateResult;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +34,17 @@ public class SparkLivingLab {
 		userUtils = (UserUtils) service;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
 
-		initialSetup.dbInit();// verificar si debo hacer las funciones con return o void
-		initialSetup.deviceDBInit();// verificar si debo hacer las funciones con return o void
+		dataBaseManager.dbInit();
+
+		long docCount= dataBaseManager.collection.countDocuments();
+		if (dataBaseManager.docCount==0) {
+			dataBaseManager.buildDataBase();
+
+		}
+
+
 		System.out.println("Current dir: " + System.getProperty("user.dir"));
 
 		secure("password.jks", "password", null, null);
@@ -85,30 +64,61 @@ public class SparkLivingLab {
 		//example : post {"username":"plan4act","password":"proactive"} it create a token for the authentication
 
 
-		get("/info", (request, response) -> "Welcome to LivingLab!!! Currently "+initialSetup.docCount+" devices available.");
+		get("/info", (request, response) -> "Welcome to LivingLab!!! Currently "+dataBaseManager.docCount+" devices available.");
 
 
 		get("/things", (request, response) -> {
-			//return DeviceManager.handleRequest(request, response);
 			response.header("Content-Type", "application/json");
-		//	System.out.println(allDevicesArray);
-			BasicDBObject view= new BasicDBObject() ;
-			view.put("Things",initialSetup.collection.find());
-			JSONObject showDev= new JSONObject(view.toJson());
-			return showDev.get("Things");
+			//set schema context, name and type
+			JSONObject obj = new JSONObject();
+			JSONArray ctx = new JSONArray();
+			ctx.put("http://iot.schema.org");
+			obj.put("@context", ctx);
+			JSONArray type = new JSONArray();
+			type.put("Thing");
+			obj.put("@type", type);
+			obj.put("name", "Smart Home Living Lab Devices");
+
+			//set security scheme
+			JSONArray sec = new JSONArray();
+			JSONObject bar = new JSONObject();
+			bar.put("authorizationUrl", "/auth");
+			bar.put("scheme", "bearer");
+			bar.put("format", "JWT");
+			sec.put(bar);
+			obj.put("security", sec);
+
+			//set properties
+			JSONObject props = new JSONObject();
+			JSONArray devlist = new JSONArray();
+			props.put("devices", devlist);
+			obj.put("properties", props);
+			//set devices
+			List<Document> devices = (List<Document>) dataBaseManager.collection.find().into(
+					new ArrayList<Document>());
+
+			for (Document device : devices) {
+				JSONObject dev = new JSONObject();
+				dev.put("type", "Thing");
+				dev.put("name", device.getString("name"));
+				JSONObject oo = new JSONObject();
+				oo.put("http:methodName", "GET");
+				oo.put("href", "/things/"+device.getObjectId("_id").toString());
+				JSONArray forms = new JSONArray();
+				forms.put(oo);
+				dev.put("forms", forms);
+				System.out.println("device name = " + device.getString("name"));
+				System.out.println("device href = " + device.getString("href"));
+				System.out.println("obj id = " + device.getObjectId("_id").toString());
+				devlist.put(dev);
+			}
+
+			return obj.toString();
+
 		});
 
 
 
-		get("/analizetext", (request, response) -> {
-					response.header("Content-Type", "application/json");
-					response.header("Access-Control-Allow-Origin", "*");
-					response.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH,OPTIONS");
-					response.header("Access-Control-Allow-Headers", "Authorization, authorization");
-					String input = request.queryParams("message");
-					return (new TextRecognizer()).getJsonMessage(input);
-				}
-		);
 
 
 
@@ -117,26 +127,31 @@ public class SparkLivingLab {
 		get("things/:thingId/properties/:propertyName", (request, response) -> {
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
-			int idx = Integer.parseInt(index);
+			//int idx = Integer.parseInt(index);
 			DBObject propFilter = new BasicDBObject();
-			propFilter.put( "href", "/"+idx);
+			propFilter.put( "href", "/things/"+index);
 			try {
-				Document show =  initialSetup.collection.find((Bson) propFilter).first();
+				Document show =  dataBaseManager.collection.find((Bson) propFilter).first();
 				JSONObject showProp= new JSONObject(show.toJson());
 				String alias = showProp.get("name").toString();
 				JSONObject view= new JSONObject();
-				//======================================================================
 				//Implementación de Bridge a uAAL
 				uAALBridge bridgeTouAAL = new uAALBridge();
 				String vDevice=alias;
-				String vadURL = "http://192.168.1.130:8181/uAALServices?device="+vDevice;
+				System.out.println("este es vDevice"+vDevice);
+				String vadURL = "http://192.168.1.68:8181/uAALServices?device="+vDevice;
+				String res=bridgeTouAAL.sendSyncRedirectToLL(vadURL);
+				System.out.println("Esto es res "+res);
 				JSONObject getSt = new JSONObject(bridgeTouAAL.sendSyncRedirectToLL(vadURL));
-				System.out.println(getSt);
-				view.put("on",getSt.get(alias));// esta línea debería devolver el estado de la propiedad del dispositivo de acuerdo a WoT Mozilla
+				System.out.println("esto es getSt "+getSt.toString());
+				view.put("status",getSt.get(alias));// esta línea debería devolver el estado de la propiedad del dispositivo de acuerdo a WoT Mozilla
+				System.out.println("este es view"+view.toString());
 				return view;
-				//=======================================================================
-			}catch (JSONException e) {
-				return "Error en la interpretación del formato de respuesta de uAAL";
+
+			}catch (Exception e) {
+				e.printStackTrace();
+				return "Unable to reach server or Error in server response interpretation";
+
 						}
 				}
 		);
@@ -144,13 +159,13 @@ public class SparkLivingLab {
 
 		get("things/:thingId/properties", (request, response) -> {
 			String index = request.params(":thingId");
-			int idx = Integer.parseInt(index);
+			//int idx = Integer.parseInt(index);
 			response.header("Content-Type", "application/json");
 			DBObject propFilter = new BasicDBObject();
-			propFilter.put( "href", "/"+idx);
+			propFilter.put( "href", "/things/"+index);
 
 			try {
-				Document show =  initialSetup.collection.find((Bson) propFilter).first();
+				Document show =  dataBaseManager.collection.find((Bson) propFilter).first();
 				JSONObject showProp= new JSONObject(show.toJson());
 				return showProp.get("properties");
 				}
@@ -165,13 +180,13 @@ public class SparkLivingLab {
 		get("/things/:thingId", (request, response) -> {
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
-			int idx = Integer.parseInt(index);
+			//int idx = Integer.parseInt(index);
 			DBObject thingFilter = new BasicDBObject();
-			thingFilter.put( "href", "/"+idx);
-			Document aThing = new Document(initialSetup.collection.find((Bson)thingFilter).first());
+			thingFilter.put( "href", "/things/"+index);
+			Document aThing = new Document(dataBaseManager.collection.find((Bson)thingFilter).first());
 			Document projection = new Document();
-			projection.append("_id",0).append("Current Status",0);
-			aThing = initialSetup.collection.find((Bson) thingFilter).projection(exclude("Current Status","_id")).first();
+			projection.append("_id",0).append("Status",0);
+			aThing = dataBaseManager.collection.find((Bson) thingFilter).projection(exclude("status","_id")).first();
 			JSONObject showThing= new JSONObject(aThing);
 			return showThing;
 				}
@@ -183,41 +198,45 @@ public class SparkLivingLab {
 		put("things/:thingId/properties/:propertyName", (request, response) -> {
 			response.header("Content-Type", "application/json");
 			String index = request.params(":thingId");
-			int idx = Integer.parseInt(index);
-			/*
-			JSON format for this request: { "on": true/false }
-			 */
+			//int idx = Integer.parseInt(index);
+
 			try {
+				DBObject thingFilter = new BasicDBObject();
+				thingFilter.put( "href", "/things/"+index);
+				Document thisThing = new Document(dataBaseManager.collection.find((Bson)thingFilter).first());
 				JSONObject o = new JSONObject(request.body());
 				JSONObject inputDev = new JSONObject();
-				inputDev.put("Current Status",o.get(initialSetup.newDevice.propertyName.toLowerCase()));
-				DBObject propFilter = new BasicDBObject();
-				propFilter.put( "href", "/"+idx);
-				initialSetup.collection.updateOne(Filters.eq("href","/"+idx), new Document("$set", new Document("Current Status",inputDev.get("Current Status"))));
-				Document uDevice=initialSetup.collection.find((Bson) propFilter).first();
+				//inputDev.put("status",o.get(thisThing.get("name").toString()));
+				inputDev.put("status",o.get("status"));
+
+				dataBaseManager.collection.updateOne(Filters.eq("href","/things/"+index), new Document("$set", new Document("status",inputDev.get("status"))));
+				Document uDevice=dataBaseManager.collection.find((Bson) thingFilter).first();
 				JSONObject alias_obj =new JSONObject(uDevice.toJson());
 				String alias = alias_obj.get("name").toString();
-//=========================================================================================================================================
+
+
 				uAALBridge bridgeTouAAL = new uAALBridge();
-				String toggleStatus=o.get(initialSetup.newDevice.propertyName).toString().toLowerCase();
+				String toggleStatus=o.get("status").toString().toLowerCase();
 				if (toggleStatus=="true"){toggleStatus="100";}else{toggleStatus="0";}
 				String vDevice=alias;
 				if (vDevice.contains("door")){if (toggleStatus!="0"){toggleStatus="1";}}
 				JSONObject reply = new JSONObject(bridgeTouAAL.sendSyncRequestToLL(toggleStatus, vDevice));
 				System.out.println(reply);
 				if (vDevice.contains("door")){
-					String rep=reply.get(initialSetup.newDevice.name).toString();//COLOCAR ALIAS SEGURAMENTE SALE DE LA BASE DE DATOS!!!!!!!!
+					String rep=reply.get(thisThing.get("name").toString()).toString();//COLOCAR ALIAS SEGURAMENTE SALE DE LA BASE DE DATOS!!!!!!!!
 					JSONObject resp=new JSONObject();
 					resp.put(alias,rep);
 					System.out.println(resp);
 					return resp;
 				}
-				else {String rep=reply.getString(initialSetup.newDevice.name);
+				else {String rep=reply.getString(thisThing.get("name").toString());
 					JSONObject resp = new JSONObject();
 					resp.put(alias, rep);
 					System.out.println(resp);
 					return resp;
 				}
+
+				//return alias;
 
 			} catch (JSONException e) {
 						return "error a determinar";
@@ -244,7 +263,7 @@ public class SparkLivingLab {
             }
             ================================================
              */
-			long countDocs=initialSetup.collection.countDocuments();
+			long countDocs= dataBaseManager.collection.countDocuments();
             DevicesCreator addDev = new DevicesCreator();
             try {
                 JSONObject vars = new JSONObject(request.body()) {
@@ -260,10 +279,10 @@ public class SparkLivingLab {
                 addDev.propType=vars.get("Property Type").toString();
                 addDev.writable=vars.getBoolean("Writable Device");
                 addDev.devSerial=countDocs;
-                addDev.devStatus=vars.getBoolean("Initial Status");
+                addDev.devStatus=vars.getBoolean("status");
                 Document LLDev = new Document(DevicesCreator.assembleDevice(addDev));
 
-                initialSetup.collection.insertOne(LLDev);
+                dataBaseManager.collection.insertOne(LLDev);
 
                 return "Device "+addDev.name+" has been created successfully";
 

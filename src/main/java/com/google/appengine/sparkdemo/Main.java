@@ -18,6 +18,8 @@ package com.google.appengine.sparkdemo;
 
 import static spark.Spark.port;
 import com.google.cloud.datastore.DatastoreOptions;
+
+import java.io.FileNotFoundException;
 /*
 //Run locally
 canaima:TestSpark Eugenio$ echo $JAVA_HOME
@@ -38,7 +40,7 @@ public class Main {
   /**
    * Starts the webapp on localhost:8080.
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws FileNotFoundException {
     port(8080);  
     
     String kind = "DemoUser";

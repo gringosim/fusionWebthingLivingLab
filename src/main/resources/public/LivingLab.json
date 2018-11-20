@@ -1,0 +1,57 @@
+
+{
+  "@context": ["http://iot.schema.org"],
+  "@type": ["Thing"],
+  "name": "Smart Home Living Lab",
+  "properties": {
+    "devices": {
+      "type": "Thing",
+      "forms": [
+        {
+          "http:methodName": "GET",
+          "href": "/things"
+        }
+      ]
+    }
+  },
+  "actions": {
+    "login": {
+      "output": {
+        "type": "object",
+        "properties": {
+          "JWT": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          }
+        },
+        "forms": [
+          {
+            "href": "/auth",
+            "http:methodName": "POST",
+            "contentType": "application/json"
+          }
+        ]
+      }
+    },
+    "security": [
+      {
+        "authorizationUrl": "/auth",
+        "scheme": "bearer",
+        "format": "JWT"
+      }
+    ]
+  }
+}

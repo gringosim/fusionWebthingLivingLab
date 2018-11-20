@@ -19,7 +19,7 @@ import javax.swing.SwingWorker;
 
 public class ContextDefinition implements ServiceInterface {
     public String generateDomain(){
-        String serviceDomain = "http://192.168.1.130:8181"; //Define service domain (HTTPS)
+        String serviceDomain = "http://192.168.1.68:8081"; //Define service domain (HTTPS)
         return serviceDomain;
     };
     public String defineService(){
